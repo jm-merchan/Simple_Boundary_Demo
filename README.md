@@ -36,9 +36,9 @@ ssh -i cert.pem ubuntu@$(terraform output -json | jq -r .target_publicIP.value)
 
 Nos logueamos en el desktop y obtenemos los credenciales. En este caso estamos haciendo uso de “Credential Brokering” donde los credenciales se definen de forma estática en Boundary directamente.
 
-![Untitled](Boundary%20Demo%20NTT%20f4c523f026c24c13829de892037080fc/Untitled.png)
+![Untitled](Boundary%20Demo/Untitled.png)
 
-![Untitled](Boundary%20Demo%20NTT%20f4c523f026c24c13829de892037080fc/Untitled%201.png)
+![Untitled](Boundary%20Demo/Untitled%201.png)
 
 En base a los datos de arriba nos podemos conectar por medio de una sesión tunelizada por Boundary
 
@@ -55,7 +55,7 @@ boundary targets list -recursive
 boundary connect ssh -target-id=<id>
 ```
 
-![Untitled](Boundary%20Demo%20NTT%20f4c523f026c24c13829de892037080fc/Untitled%202.png)
+![Untitled](Boundary%20Demo/Untitled%202.png)
 
 # 3.  Usar Vault credential Brokering
 
@@ -83,7 +83,7 @@ terraform apply -auto-approve
 
 Llegados a este punto podemos chequear el acceso a la base de datos con dos accesos distintos, db admin y analyst.
 
-![Untitled](Boundary%20Demo%20NTT%20f4c523f026c24c13829de892037080fc/Untitled%203.png)
+![Untitled](Boundary%20Demo/Untitled%203.png)
 
 Lo que resulta en la siguiente conexión
 
@@ -114,7 +114,7 @@ terraform apply -auto-approve
 
 Una vez aplicada la configuración tendremos un target más en nuestra lista de targets. Conectamos con el target y como estamos usando ssh injection no obtendremos ningún tipo de credenciales
 
-![Untitled](Boundary%20Demo%20NTT%20f4c523f026c24c13829de892037080fc/Untitled%204.png)
+![Untitled](Boundary%20Demo/Untitled%204.png)
 
 De tal manera que solo tendremos que hacer un
 
@@ -150,6 +150,6 @@ terraform apply -auto-approve
 
 En este caso para que funcione el egress worker con un ingress worker tenemos que modificar la configuración del `downstream_worker.tf` para que dicho worker apunte correctamente
 
-![Untitled](Boundary%20Demo%20NTT%20f4c523f026c24c13829de892037080fc/Untitled%205.png)
+![Untitled](Boundary%20Demo/Untitled%205.png)
 
 en el caso previo, el worker que instalamos se registraba contra el control plane directamente mientras que en este caso, el worker se registra via uno de los managed workers, que en este caso actua como upstream worker.
