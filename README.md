@@ -1,7 +1,5 @@
-# Boundary Demo NTT
+# Boundary Demo 
 
-Created: July 11, 2023 11:19 AM
-Type: Task 🔨
 
 # 1. Crear clusters de Vault y Boundary en HCP
 
