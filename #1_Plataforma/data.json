@@ -1,0 +1,27 @@
+{
+  "boundary_public_url": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://e8078eac-ce87-4401-bb7c-3a2fff482d10.boundary.hashicorp.cloud"
+  },
+  "vault_private_url": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://vault-cluster-private-vault-9033f92f.93b81ec9.z1.hashicorp.cloud:8200"
+  },
+  "vault_public_url": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://vault-cluster-public-vault-9033f92f.93b81ec9.z1.hashicorp.cloud:8200"
+  },
+  "vault_token": {
+    "sensitive": false,
+    "type": "string",
+    "value": "hvs.CAESIKEX51k_XMVInj2dExsDUHE--lCBztLXjiggdbxj46dhGicKImh2cy4wd3ZXQ0E0SEtxYktQdDVUb1hpSm4ybmQudTQ4UWEQ8Uw"
+  },
+  "vpc": {
+    "sensitive": false,
+    "type": "string",
+    "value": "vpc-0ae53e546af2ef0df"
+  }
+}
