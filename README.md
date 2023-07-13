@@ -5,8 +5,8 @@
 
 ```bash
 cd \#1_Plataforma/
-doormat login
-<cp creds>
+
+<export AWS Creds>
 terraform init
 terraform apply -auto-approve
 terraform output -json > data.json
