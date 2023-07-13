@@ -66,7 +66,7 @@ En este ejemplo vamos a hacer dos cosas.
 Antes de comenzar el workflow de Terraform debemos obtener un admin token de Vault para poder aplicar la configuración.  En el primer paso añadimos el token mediante variable de entorno
 
 ```bash
-export VAULT_TOKEN = "hvs.CAESIAihr7BXA4WosJTKMLIzFcDS3u8nk0WZmiRBzPjtNuB-GicKImh2cy5zNE9mQjF3QTNVZGN4aUE2bHlqcVhna20ud2FNY00QmwI”
+export VAULT_TOKEN=$(cat data.json | jq -r .vault_token.value)”
 ```
 
 Puesto que la instancia que corre la base de datos necesita algo de tiempo para estar lista, una vez se corren los init scripts, la vamos a correr antes junto con la instancia de windows. Posteriormente correremos el resto del código de terraform.
@@ -96,7 +96,35 @@ Con la CLI podemos pasar los credenciales directamente a psql usando los exec pl
 boundary connect postgres -target-id <id> -dbname northwind
 ```
 
-puesto que hemos instalado IIS en el host de windows podemos también hacer uso de un target para procesar tráfico web Usando el Windows HTTP target
+puesto que hemos instalado IIS en el host de windows podemos también hacer uso de un target para procesar tráfico web Usando el Windows HTTP target podemos conectarnos al servidor web instalado (IIS) instalado en el servidor de windows.
+
+![1689254963962](image/README/1689254963962.png)
+
+Una vez conectados podemos ver el estado de la sesión en el Boundary Desktop
+
+![1689255051957](image/README/1689255051957.png)
+
+Igualmente podemos establecer una sesión RDP abriendo un túnel contra el RDP Target
+
+![1689255101015](image/README/1689255101015.png)
+
+![1689255123541](image/README/1689255123541.png)
+
+Con esta información podemos configurar nuestra RDP client. En este caso concreto, usando Microsoft Remote Desktop sobre macOS
+
+![1689255215495](image/README/1689255215495.png)
+
+
+![1689255300148](image/README/1689255300148.png)
+
+Aceptamos el warning derivado del certificado
+
+![1689255323104](image/README/1689255323104.png)
+
+Tras lo cual podremos acceder al host
+
+![1689255366658](image/README/1689255366658.png)
+
 
 # 4.  SSH Certificate Injection
 
@@ -151,4 +179,4 @@ En este caso para que funcione el egress worker con un ingress worker tenemos qu
 
 ![Untitled](Boundary%20Demo/Untitled%205.png)
 
-en el caso previo, el worker que instalamos se registraba contra el control plane directamente mientras que en este caso, el worker se registra via uno de los managed workers, que en este caso actua como upstream worker.
+en el caso previo, el worker que instalamos se registraba contra el control plane directamente mientras que en este caso, el worker se registra via uno de los managed workers, que en este caso actúa como upstream worker.
