@@ -59,9 +59,9 @@ boundary connect ssh -target-id=<id>
 
 ![Untitled](Boundary%20Demo%20NTT%20f4c523f026c24c13829de892037080fc/Untitled%202.png)
 
-# 3 Usar Vault credential Brokering
+# 3.  Usar Vault credential Brokering
 
-En este ejemplo vamos a hacer dos cosas. 
+En este ejemplo vamos a hacer dos cosas.
 
 1. Por un lado vamos a instalar un servidor linux donde instalaremos una base de datos. Esta base de datos se va a configurar para hacer uso de Vault.
 2. Por otro lado vamos a instalar un servidor windows  y usar boundary para acceder vía RDP. En este caso, los credenciales se definirán de forma estática en Boundary
@@ -101,7 +101,7 @@ boundary connect postgres -target-id <id> -dbname northwind
 
 puesto que hemos instalado IIS en el host de windows podemos también hacer uso de un target para procesar tráfico web Usando el Windows HTTP target
 
-# 4 SSH Certificate Injection
+# 4.  SSH Certificate Injection
 
 Como en el caso anterior tenemos que actualizar el token usado para acceder a Vault. Separamos el código en dos porque primeros tenemos que crear la SSH Secret Engine, derivar de esta la CA, que en un segundo paso subiremos al linux host.
 
@@ -118,7 +118,7 @@ Una vez aplicada la configuración tendremos un target más en nuestra lista de 
 
 ![Untitled](Boundary%20Demo%20NTT%20f4c523f026c24c13829de892037080fc/Untitled%204.png)
 
-De tal manera que solo tendremos que hacer un 
+De tal manera que solo tendremos que hacer un
 
 ```bash
 ssh 127.0.0.1 -p 56533
@@ -130,7 +130,7 @@ Igualmente desde la cli podemos hacer uso del boundary client sabiendo el target
 boundary connect ssh -target-id=<id>
 ```
 
-# 5 Self Managed Workers
+# 5.  Self Managed Workers
 
 ```bash
 cd ../\#5\ Self_Managed_Worker/
@@ -141,7 +141,7 @@ terraform apply -auto-approve
 
 En este ejemplo vamos a instalar un self-managed worker y registrarlo de forma automática con boundary. Este Worker se va a desplegar en una public subnet con acceso a internet que estará conectada a una private subnet donde desplegaremos un Ubuntu. Este Ubuntu se ha configurado con la CA de Vault de tal manera que haremos uso de Vault para la inyección de certificados
 
-# 6 Multi Hop
+# 6.  Multi Hop
 
 ```bash
 cd ../\#6_Multi_hop/
