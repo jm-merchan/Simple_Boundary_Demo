@@ -1,5 +1,4 @@
-# Boundary Demo 
-
+# Boundary Demo
 
 # 1. Crear clusters de Vault y Boundary en HCP
 
@@ -13,8 +12,8 @@ terraform output -json > data.json
 export BOUNDARY_ADDR=$(cat data.json | jq -r .boundary_public_url.value)
 export VAULT_ADDR=$(cat data.json | jq -r .vault_public_url.value)
 export VAULT_NAMESPACE=admin
-boundary authenticate
 export VAULT_TOKEN=$(cat data.json | jq -r .vault_token.value)
+boundary authenticate
 ```
 
 # 2. Crear una instancia de EC2 sobre la que loguearse vía Boundary
