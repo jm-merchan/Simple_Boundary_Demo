@@ -5,7 +5,7 @@ The content of this demo is the result of Terraforming several of the Boundary a
 # 1. Crear clusters de Vault y Boundary en HCP
 
 ```bash
-cd \#1_Plataforma/
+cd 1_Plataforma/
 
 <export AWS Creds>
 terraform init
@@ -21,7 +21,7 @@ boundary authenticate
 # 2. Crear una instancia de EC2 sobre la que loguearse vía Boundary
 
 ```bash
-cd ../\#2_First_target
+cd ../2_First_target
 terraform init
 # Creamos primero la RSA key y el certificado
 terraform apply -auto-approve -target=aws_key_pair.ec2_key -target=tls_private_key.rsa_4096_key
@@ -74,7 +74,7 @@ export VAULT_TOKEN=$(cat data.json | jq -r .vault_token.value)”
 Puesto que la instancia que corre la base de datos necesita algo de tiempo para estar lista, una vez se corren los init scripts, la vamos a correr antes junto con la instancia de windows. Posteriormente correremos el resto del código de terraform.
 
 ```bash
-cd ../\#3_Vault_Credential_Brokering
+cd ../3_Vault_Credential_Brokering
 terraform init
 # Instalamos primero los hosts en AWS
 terraform apply -auto-approve -target=aws_instance.postgres_target -target=aws_instance.windows-server
@@ -116,7 +116,6 @@ Con esta información podemos configurar nuestra RDP client. En este caso concre
 
 ![1689255215495](image/README/1689255215495.png)
 
-
 ![1689255300148](image/README/1689255300148.png)
 
 Aceptamos el warning derivado del certificado
@@ -127,13 +126,12 @@ Tras lo cual podremos acceder al host
 
 ![1689255366658](image/README/1689255366658.png)
 
-
 # 4.  SSH Certificate Injection
 
 Como en el caso anterior tenemos que actualizar el token usado para acceder a Vault. Separamos el código en dos porque primeros tenemos que crear la SSH Secret Engine, derivar de esta la CA, que en un segundo paso subiremos al linux host.
 
 ```bash
-cd ../#4_Vault_SSH_Injection/vault_config
+cd ../4_Vault_SSH_Injection/vault_config
 terraform init
 terraform apply -auto-approve
 cd ..
@@ -160,7 +158,7 @@ boundary connect ssh -target-id=<id>
 # 5.  Self Managed Workers
 
 ```bash
-cd ../\#5\ Self_Managed_Worker/
+cd ../5_Self_Managed_Worker/
 terraform init
 cp ../\#4_Vault_SSH_Injection/vault_ca.pub vault_ca.pub
 terraform apply -auto-approve
@@ -171,7 +169,7 @@ En este ejemplo vamos a instalar un self-managed worker y registrarlo de forma a
 # 6.  Multi Hop
 
 ```bash
-cd ../\#6_Multi_hop/
+cd ../6_Multi_hop/
 terraform init
 cp ../\#4_Vault_SSH_Injection/vault_ca.pub vault_ca.pub
 terraform apply -auto-approve

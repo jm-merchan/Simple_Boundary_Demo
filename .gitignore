@@ -2,7 +2,7 @@
 *tfstate*
 *pub
 *pem
-*tfvars
+*.tfvars
 data.json
 .DS_Store
 *domain*

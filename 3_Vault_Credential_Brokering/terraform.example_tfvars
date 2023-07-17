@@ -1,0 +1,4 @@
+username          = "admin"
+password          = "SuperSecret123!"
+postgres_password = "SuperSecret123!"
+key_pair_name = "cert"
