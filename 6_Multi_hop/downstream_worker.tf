@@ -85,9 +85,10 @@ locals {
   }
 
   worker {
-    public_addr = "IP" # This IP will be updated with the host public IP
+    public_addr = "IP" # This ip will be updated with the host public ip
     # Connecting to upstream worker created in the previous step
-    initial_upstreams = [${data.terraform_remote_state.local_backend_upstream.outputs.upstreamWorker_publicFQDN}:9202]
+    initial_upstreams = ["${data.terraform_remote_state.local_backend_upstream.outputs.upstreamWorker_publicFQDN}:9202"]
+    # initial_upstreams = ["e51966dd-9809-4e57-a24f-652775acfe0a.proxy.boundary.hashicorp.cloud:9202"]
     auth_storage_path = "/etc/boundary.d/worker"
     controller_generated_activation_token = "${boundary_worker.egress_pki_worker.controller_generated_activation_token}"
     tags {
