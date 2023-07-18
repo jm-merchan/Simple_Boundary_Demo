@@ -26,12 +26,17 @@ resource "aws_instance" "boundary_upstream_worker" {
   vpc_security_group_ids = [aws_security_group.publicsg.id]
   subnet_id              = aws_subnet.public1.id
 
-  user_data_replace_on_change = true
+  user_data_replace_on_change = false
   user_data_base64            = data.cloudinit_config.boundary_ingress_worker.rendered
 
   tags = {
     Name = "boundary-worker-upstream"
   }
+  /*
+  lifecycle {
+    prevent_destroy = true
+  }
+  */
 }
 
 
