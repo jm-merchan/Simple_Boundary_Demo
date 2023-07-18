@@ -62,16 +62,12 @@ resource "boundary_target" "win_rdp" {
   type                     = "tcp"
   name                     = "Windows RDP"
   description              = "RDP Target"
-  #egress_worker_filter     = " \"sm-egress-downstream-worker1\" in \"/tags/type\" "
-  #ingress_worker_filter    = " \"sm-ingress-upstream-worker1\" in \"/tags/type\" "
   scope_id                 = boundary_scope.project_w.id
   session_connection_limit = -1
   default_port             = 3389
   host_source_ids = [
     boundary_host_set_static.win.id
   ]
-  
-  # Comment this to avoid brokeing the credentials
   
   brokered_credential_source_ids = [
     boundary_credential_library_vault.windows.id
@@ -83,15 +79,12 @@ resource "boundary_target" "win_http" {
   type                     = "tcp"
   name                     = "Windows HTTP"
   description              = "HTTP Target"
-  #egress_worker_filter     = " \"sm-egress-downstream-worker1\" in \"/tags/type\" "
-  #ingress_worker_filter    = " \"sm-ingress-upstream-worker1\" in \"/tags/type\" "
   scope_id                 = boundary_scope.project_w.id
   session_connection_limit = -1
   default_port             = 80
   host_source_ids = [
     boundary_host_set_static.win.id
   ]
-  
   # Comment this to avoid brokeing the credentials
   /*
   brokered_credential_source_ids = [
