@@ -226,6 +226,9 @@ The result of this configuration will be a new scope (`ssh-private-org`) and tar
 
 ![1689668797647](image/README/1689668797647.png)
 
+> Note: 
+
+
 # 6.  Multi Hop
 
 ```bash
