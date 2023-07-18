@@ -336,6 +336,91 @@ rules:
   verbs: ["list","create", "update", "delete"]
 ```
 
+Now, you may be wondering: it have to be an easier way. The answer is yes. Boundary CLI client to the rescue.
+
+```bash
+> boundary connect kube -target-id <target-id> -- get pods -n test 
+Credentials:
+  Credential Source Description: Account for test namespace
+  Credential Source ID:          clvlt_OhobkBhNnd
+  Credential Source Name:        Test Namespace
+  Credential Store ID:           csvlt_NMdTwnWSJi
+  Credential Store Type:         vault-generic
+  Secret:
+      {
+          "service_account_name": "test-service-account-with-generated-token",
+          "service_account_namespace": "test",
+          "service_account_token":
+          "ey..."
+      }
+
+No resources found in test namespace.
+```
+
+Let's create a Pod
+
+```bash
+> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- run my-pod --image=nginx  -n test
+Credentials:
+  Credential Source Description: Account for test namespace
+  Credential Source ID:          clvlt_OhobkBhNnd
+  Credential Source Name:        Test Namespace
+  Credential Store ID:           csvlt_NMdTwnWSJi
+  Credential Store Type:         vault-generic
+  Secret:
+      {
+          "service_account_name": "test-service-account-with-generated-token",
+          "service_account_namespace": "test",
+          "service_account_token":
+          "eyJhb..."
+      }
+
+pod/my-pod created
+```
+Let's verify running pods in test namespace
+
+```bash
+> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- get pods  -n test                
+Credentials:
+  Credential Source Description: Account for test namespace
+  Credential Source ID:          clvlt_OhobkBhNnd
+  Credential Source Name:        Test Namespace
+  Credential Store ID:           csvlt_NMdTwnWSJi
+  Credential Store Type:         vault-generic
+  Secret:
+      {
+          "service_account_name": "test-service-account-with-generated-token",
+          "service_account_namespace": "test",
+          "service_account_token":
+          "eyJh..."
+      }
+
+NAME     READY   STATUS    RESTARTS   AGE
+my-pod   1/1     Running   0          2m
+```
+
+Finally, lets removed the running pod
+
+```bash
+> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- delete pods my-pod  -n test
+Credentials:
+  Credential Source Description: Account for test namespace
+  Credential Source ID:          clvlt_OhobkBhNnd
+  Credential Source Name:        Test Namespace
+  Credential Store ID:           csvlt_NMdTwnWSJi
+  Credential Store Type:         vault-generic
+  Secret:
+      {
+          "service_account_name": "test-service-account-with-generated-token",
+          "service_account_namespace": "test",
+          "service_account_token":
+          "eyJhb..."
+      }
+
+pod "my-pod" deleted
+```
+
+
 ## 8. Clean Up
 
 To clean up we go to the main directory and from there
