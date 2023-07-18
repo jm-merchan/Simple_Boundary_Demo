@@ -31,7 +31,13 @@ resource "aws_security_group" "public_network_http_rdp" {
     to_port     = 3389
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    #cidr_blocks = ["${data.http.current.response_body}/32"]
+  }
+
+  ingress {
+    from_port   = 389
+    to_port     = 389
+    protocol    = "tcp"
+    cidr_blocks = ["172.25.16.0/20"]
   }
 
   egress {
@@ -49,7 +55,7 @@ resource "aws_security_group" "public_network_http_rdp" {
 
 resource "aws_instance" "windows-server" {
   ami                    = data.aws_ami.windows-2019.id
-  instance_type          = "t2.micro"
+  instance_type          = "t3.medium"
   subnet_id              = data.aws_subnet.example_subnet.id
   vpc_security_group_ids = [aws_security_group.public_network_http_rdp.id]
   source_dest_check      = false
