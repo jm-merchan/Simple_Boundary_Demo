@@ -93,7 +93,7 @@ resource "boundary_target" "ssh" {
   name                     = "ssh-target-private-multi"
   description              = "ssh-target"
   egress_worker_filter     = " \"worker-multi\" in \"/tags/type\" "
-  ingress_worker_filter    = " \"true\" in \"/tags/boundary.cloud.hashicorp.com:managed\" "
+  ingress_worker_filter    = " \"worker1\" in \"/tags/type\" "
   scope_id                 = boundary_scope.project.id
   session_connection_limit = -1
   default_port             = 22

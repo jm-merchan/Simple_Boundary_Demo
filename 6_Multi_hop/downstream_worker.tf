@@ -26,11 +26,17 @@ resource "aws_instance" "boundary_downstream_worker" {
   vpc_security_group_ids = [aws_security_group.publicsg.id]
   subnet_id              = aws_subnet.public1.id
 
-  user_data_replace_on_change = true
+  # user_data_replace_on_change = false
   user_data_base64            = data.cloudinit_config.boundary_egress_worker.rendered
 
   tags = {
     Name = "boundary-worker-downstream"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      user_data_base64,
+    ]
   }
 }
 
@@ -41,7 +47,6 @@ resource "boundary_worker" "egress_pki_worker" {
   scope_id                    = "global"
   name                        = "boundary-egress-pki-worker"
   worker_generated_auth_token = ""
-  
 }
 
 /* This locals block sets out the configuration for the Boundary Service file and 
@@ -77,8 +82,6 @@ locals {
   boundary_egress_worker_hcl_config = <<-WORKER_HCL_CONFIG
   disable_mlock = true
 
-  # hcp_boundary_cluster_id = "${split(".", split("//", data.terraform_remote_state.local_backend.outputs.boundary_public_url)[1])[0]}"
-
   listener "tcp" {
     address = "0.0.0.0:9202"
     purpose = "proxy"
@@ -88,7 +91,6 @@ locals {
     public_addr = "IP" # This ip will be updated with the host public ip
     # Connecting to upstream worker created in the previous step
     initial_upstreams = ["${data.terraform_remote_state.local_backend_upstream.outputs.upstreamWorker_publicFQDN}:9202"]
-    # initial_upstreams = ["e51966dd-9809-4e57-a24f-652775acfe0a.proxy.boundary.hashicorp.cloud:9202"]
     auth_storage_path = "/etc/boundary.d/worker"
     controller_generated_activation_token = "${boundary_worker.egress_pki_worker.controller_generated_activation_token}"
     tags {

@@ -60,8 +60,8 @@ resource "boundary_credential_username_password" "example" {
 
 resource "boundary_target" "win" {
   type                     = "tcp"
-  name                     = "win-target-private-multi"
-  description              = "win-target"
+  name                     = "win-rdp-target-private-multi"
+  description              = "win-rdp- target"
   egress_worker_filter     = " \"worker-multi\" in \"/tags/type\" "
   ingress_worker_filter    = " \"true\" in \"/tags/boundary.cloud.hashicorp.com:managed\" "
   scope_id                 = boundary_scope.project_w.id
@@ -84,7 +84,8 @@ resource "boundary_target" "win_http" {
   name                     = "win-http-target-private-multi"
   description              = "win-http-target"
   egress_worker_filter     = " \"worker-multi\" in \"/tags/type\" "
-  ingress_worker_filter    = " \"true\" in \"/tags/boundary.cloud.hashicorp.com:managed\" "
+  # ingress_worker_filter    = " \"true\" in \"/tags/boundary.cloud.hashicorp.com:managed\" "
+  ingress_worker_filter    = " \"worker1\" in \"/tags/type\" "
   scope_id                 = boundary_scope.project_w.id
   session_connection_limit = -1
   default_port             = 80

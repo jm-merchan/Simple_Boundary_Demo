@@ -16,8 +16,3 @@ variable "region" {
 variable "key_pair_name" {
   type = string
 }
-
-variable "vpc_cidr" {
-  type        = string
-  description = "VPC CIDR"
-}

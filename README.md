@@ -231,6 +231,21 @@ The result of this configuration will be a new scope (`ssh-private-org`) and tar
 
 # 6.  Multi Hop
 
+In this case we are going to deploy a new VPC where we are going to deploy a self-managed worker in a Public Subnet and a couple of EC2 instances in a private subnet:
+
+* A Windows server, whose credentials will be stored within Boundary.
+* An Ubuntu server that is configured to trust Vault CA.
+
+This self-managed worker will connect to HCP Boundary controllers via the Self-managed worker created in step 5. 
+
+![1689674159435](image/README/1689674159435.png)
+
+Likewise, targets are configured with ingress and egress workers
+
+![1689674196315](image/README/1689674196315.png)
+
+To install the code
+
 ```bash
 cd ../6_Multi_hop/
 terraform init
@@ -238,8 +253,11 @@ cp ../\#4_Vault_SSH_Injection/vault_ca.pub vault_ca.pub
 terraform apply -auto-approve
 ```
 
-En este caso para que funcione el egress worker con un ingress worker tenemos que modificar la configuración del `downstream_worker.tf` para que dicho worker apunte correctamente
+The result of this would be two scopes in Boundary:
 
-![Untitled](Boundary%20Demo/Untitled%205.png)
+* `win-private-multi-org`: it will host two targets for the same host, one pointing to port 80 and the other on the RDP port
 
-en el caso previo, el worker que instalamos se registraba contra el control plane directamente mientras que en este caso, el worker se registra via uno de los managed workers, que en este caso actúa como upstream worker.
+  ![1689674492689](image/README/1689674492689.png)
+* `ssh-private-multi-org`: it will host a single target that will make use of SSH Credential Injection
+
+  ![1689674534778](image/README/1689674534778.png)
