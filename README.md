@@ -1,6 +1,8 @@
 # Boundary Demo
 
-The content of this demo is the result of Terraforming several of the Boundary and HCP Learn Tutorials with a few additions along the way
+The content of this demo is the result of Terraforming several of the Boundary and HCP Learn Tutorials with a few additions along the way.
+
+You need an AWS and HCP accounts.
 
 # 1. Building Vault and Boundary clusters in HCP
 
