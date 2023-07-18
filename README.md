@@ -222,8 +222,6 @@ cp ../4_Vault_SSH_Injection/vault_ca.pub vault_ca.pub
 terraform apply -auto-approve
 ```
 
-
-
 The result of this configuration will be a new scope (`ssh-private-org`) and target (`ssh-target-private`)
 
 ![1689668797647](image/README/1689668797647.png)
@@ -235,7 +233,7 @@ In this case we are going to deploy a new VPC where we are going to deploy a sel
 * A Windows server, whose credentials will be stored within Boundary.
 * An Ubuntu server that is configured to trust Vault CA.
 
-This self-managed worker will connect to HCP Boundary controllers via the Self-managed worker created in step 5. 
+This self-managed worker will connect to HCP Boundary controllers via the Self-managed worker created in step 5.
 
 ![1689674159435](image/README/1689674159435.png)
 
@@ -294,7 +292,6 @@ After this we are going to have a new org withing Boundary that contains our EKS
 
 After clicking in connect, we get a tunnel open towards the EKS target with the corresponding secrets.
 
-
 ![1689693683559](image/README/1689693683559.png)
 
 In a separate terminal we have to run the following
@@ -311,7 +308,6 @@ kubectl run my-pod --image=nginx --namespace=test --tls-server-name kubernetes -
 kubectl delete pod my-pod  --tls-server-name kubernetes --server=https://127.0.0.1:$PORT --token=$REMOTE_USER_TOKEN -n test
 kubectl get pod --tls-server-name kubernetes --server=https://127.0.0.1:$PORT --token=$REMOTE_USER_TOKEN -n test  
 ```
-
 
 ![1689693992185](image/README/1689693992185.png)
 
