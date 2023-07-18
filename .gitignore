@@ -6,3 +6,5 @@
 data.json
 .DS_Store
 *domain*
+*crt
+token.txt

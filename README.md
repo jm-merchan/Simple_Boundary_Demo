@@ -228,9 +228,6 @@ The result of this configuration will be a new scope (`ssh-private-org`) and tar
 
 ![1689668797647](image/README/1689668797647.png)
 
-> Note: 
-
-
 # 6.  Multi Hop
 
 In this case we are going to deploy a new VPC where we are going to deploy a self-managed worker in a Public Subnet and a couple of EC2 instances in a private subnet:
@@ -263,3 +260,83 @@ The result of this would be two scopes in Boundary:
 * `ssh-private-multi-org`: it will host a single target that will make use of SSH Credential Injection
 
   ![1689674534778](image/README/1689674534778.png)
+
+# 7. Vault Credential Brokering with K8S
+
+In this case we are going to re-use the infrastructure created previously to connect Boundary and Vault, but before that, we are going to create an EKS cluster.
+
+```bash
+cd ../7_K8S_Vault_Credential_Brokering/eks-cluster
+terraform init
+terraform apply -auto-approve
+export TF_VAR_kubernetes_host=$(terraform output -json | jq -r .cluster_endpoint.value)
+# Set kubeconfig to use the cluster just generated
+aws eks --region (terraform output -raw region) update-kubeconfig  --name $(terraform output−raw region) update−kubeconfig −−name $(terraform output -raw cluster_name)
+```
+
+Then we are going to create a service account for  Vault. The service account will be associated to a `clusterRole` via a `clusterRoleBinding`.  Then we are going to create a service account with a Role that has permissions to list, create and remove pods in the `test` namespace. Finally we are going to export the token and associated Kubernetes CA from the `vault` service account into two files that are going to be used as part of Vault configuration.
+
+```bash
+cd ../vault-boundary-config
+kubectl create ns vault
+kubectl create sa vault -n vault
+kubectl create ns test
+kubectl apply -f .
+kubectl get secret -n vault $(kubectl get sa vault -n vault -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 --decode > token.txt
+kubectl get secret -n vault $(kubectl get sa vault -n vault -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.ca\.crt}' | base64 --decode > ca.crt
+terraform init
+terraform apply -auto-approve
+```
+
+After this we are going to have a new org withing Boundary that contains our EKS cluster host
+
+![1689693643907](image/README/1689693643907.png)
+
+After clicking in connect, we get a tunnel open towards the EKS target with the corresponding secrets.
+
+
+![1689693683559](image/README/1689693683559.png)
+
+In a separate terminal we have to run the following
+
+```bash
+export PORT=59826 # port above
+export REMOTE_USER_TOKEN=<service_account_token>
+```
+
+After this we can get access to the EKS cluster
+
+```bash
+kubectl run my-pod --image=nginx --namespace=test --tls-server-name kubernetes --server=https://127.0.0.1:$PORT --token=$REMOTE_USER_TOKEN
+kubectl delete pod my-pod  --tls-server-name kubernetes --server=https://127.0.0.1:$PORT --token=$REMOTE_USER_TOKEN -n test
+kubectl get pod --tls-server-name kubernetes --server=https://127.0.0.1:$PORT --token=$REMOTE_USER_TOKEN -n test  
+```
+
+
+![1689693992185](image/README/1689693992185.png)
+
+![1689694003813](image/README/1689694003813.png)
+
+if we try to run this commands in a namespace different than test it will file or if we try to operate with a resoure other than pods
+
+```bash
+kubectl get deploy --tls-server-name kubernetes --server=https://127.0.0.1:PORT −−token=REMOTE_USER_TOKEN -n test
+Error from server (Forbidden): deployments.apps is forbidden: User "system:serviceaccount:test:test-service-account-with-generated-token" cannot list resource "deployments" in API group "apps" in the namespace "test"
+
+kubectl get pod --tls-server-name kubernetes --server=https://127.0.0.1:PORT −−token=REMOTE_USER_TOKEN -n default
+Error from server (Forbidden): pods is forbidden: User "system:serviceaccount:test:test-service-account-with-generated-token" cannot list resource "pods" in API group "" in the namespace "default"
+```
+
+This is expected given the Role associated to the service-account
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: test-role-list-create-delete-pods
+  namespace: test
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list","create", "update", "delete"]
+```

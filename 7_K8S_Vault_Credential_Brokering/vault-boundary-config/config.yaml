@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test-service-account-with-generated-token
+  namespace: test
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: test-role-list-create-delete-pods
+  namespace: test
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list","create", "update", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: test-role-abilities
+  namespace: test
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: test-role-list-create-delete-pods
+subjects:
+- kind: ServiceAccount
+  name: test-service-account-with-generated-token
+  namespace: test
