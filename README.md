@@ -379,10 +379,11 @@ Credentials:
 
 pod/my-pod created
 ```
+
 Let's verify running pods in test namespace
 
 ```bash
-> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- get pods  -n test                
+> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- get pods  -n test              
 Credentials:
   Credential Source Description: Account for test namespace
   Credential Source ID:          clvlt_OhobkBhNnd
@@ -421,6 +422,8 @@ Credentials:
 
 pod "my-pod" deleted
 ```
+
+## Bonus
 
 
 ## 8. Clean Up
