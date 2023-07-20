@@ -431,7 +431,7 @@ pod "my-pod" deleted
 To clean up we go to the main directory and from there
 
 ```bash
-cd /7_K8S_Vault_Credential_Brokering/vault-boundary-config
+cd 7_K8S_Vault_Credential_Brokering/vault-boundary-config
 terraform destroy -auto-approve
 cd ../eks-cluster
 terraform destroy -auto-approve
