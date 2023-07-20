@@ -112,7 +112,6 @@ ubuntu@ip-172-31-43-192:~$
 
 Simply
 
-```
+```bash
 terraform destroy -auto-approve
-
 ```
