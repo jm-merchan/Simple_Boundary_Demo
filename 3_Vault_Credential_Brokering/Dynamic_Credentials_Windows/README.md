@@ -70,18 +70,12 @@ We are integrating Vault with AD via LDAP Secret Engine. To that end we have to:
 2. Configure the secret engine to use the user we previously created
 
    ```bash
-   vault write ldap/config binddn="CN=john,CN=Users,DC=domain,DC=local" bindpass=<password> \ 
-   url=ldaps://$(terraform output -raw targetWindows_privateIP) schema=ad insecure_tls=true
+   vault write ldap/config binddn="CN=john,CN=Users,DC=domain,DC=local" bindpass=<password> url=ldaps://$(terraform output -raw targetWindows_privateIP) schema=ad insecure_tls=true
    ```
 3. Create the role that will be used to create the users
 
    ```bash
-   vault write ldap/role/dynamic-role \   
-     creation_ldif=@Dynamic_Credentials_Windows/creation.ldif \
-     deletion_ldif=@Dynamic_Credentials_Windows/deletion.ldif \
-     rollback_ldif=@Dynamic_Credentials_Windows/deletion.ldif \
-     default_ttl=1h \
-     max_ttl=24h username_template="v_{{unix_time}}"
+   vault write ldap/role/dynamic-role creation_ldif=@Dynamic_Credentials_Windows/creation.ldif deletion_ldif=@Dynamic_Credentials_Windows/deletion.ldif rollback_ldif=@Dynamic_Credentials_Windows/deletion.ldif default_ttl=1h max_ttl=24h username_template="v_{{unix_time}}"
    ```
 4. Finally we can test to create a user
 
@@ -195,3 +189,10 @@ After login we can check the id of the user.
 
 ![1689856671543](image/README/1689856671543.png)
 
+To clean up
+
+```bash
+boundary scopes delete -id=$SCOPE_ID
+vault secrets disable ldap
+vault policy delete windows-ad
+```
