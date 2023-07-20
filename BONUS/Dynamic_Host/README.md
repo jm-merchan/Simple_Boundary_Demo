@@ -8,6 +8,15 @@ There are some additions to what is contained in that tutorial:
 2. That private key is stored within Boundary (Credential Brokering)
 3. Host Set plugins are configured with Preferred endpoint so the connection goes to the public IP (FQDN in this case) of the hosts, otherwise the private IP will be used. This can be overcome by using a self-managed worker.
 
+   ```bash
+   resource "boundary_host_set_plugin" "dev" {
+     name            = "Dev host_set_plugin"
+     host_catalog_id = boundary_host_catalog_plugin.aws_example.id
+     attributes_json = jsonencode({ "filters" = ["tag:application=dev"] })
+     preferred_endpoints = ["dns:ec2*"]
+   }
+   ```
+
 ![1689868385362](image/README/1689868385362.png)
 
 The result of this would be a new organization called "demo_organization" that contains three targets. 
