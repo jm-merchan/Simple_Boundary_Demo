@@ -107,3 +107,12 @@ See "man sudo_root" for details.
 
 ubuntu@ip-172-31-43-192:~$ 
 ```
+
+## Clean Up
+
+Simply
+
+```
+terraform destroy -auto-approve
+
+```
