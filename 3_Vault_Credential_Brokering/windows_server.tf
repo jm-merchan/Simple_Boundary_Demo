@@ -32,10 +32,17 @@ resource "aws_security_group" "public_network_http_rdp" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
+  # Allow ldap from HCP Vault
   ingress {
     from_port   = 389
     to_port     = 389
+    protocol    = "tcp"
+    cidr_blocks = ["172.25.16.0/20"]
+  }
+  # Allow ldaps from HCP Vault
+  ingress {
+    from_port   = 636
+    to_port     = 636
     protocol    = "tcp"
     cidr_blocks = ["172.25.16.0/20"]
   }
@@ -48,7 +55,7 @@ resource "aws_security_group" "public_network_http_rdp" {
   }
 
   tags = {
-    Name = "allow_http_rdp"
+    Name = "allow_http_rdp_ldap"
   }
 }
 

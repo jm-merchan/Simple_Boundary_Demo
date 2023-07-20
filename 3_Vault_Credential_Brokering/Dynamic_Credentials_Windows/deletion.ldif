@@ -1,0 +1,2 @@
+dn: CN={{.Username}},CN=Users,DC=domain,DC=local
+changetype: delete

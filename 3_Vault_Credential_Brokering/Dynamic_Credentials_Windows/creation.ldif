@@ -1,0 +1,23 @@
+dn: CN={{.Username}},CN=Users,DC=domain,DC=local
+changetype: add
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: user
+userPrincipalName: {{.Username}}@domain.local
+sAMAccountName: {{.Username}}
+
+dn: CN={{.Username}},CN=Users,DC=domain,DC=local
+changetype: modify
+replace: unicodePwd
+unicodePwd::{{ printf "%q" .Password | utf16le | base64 }}
+-
+replace: userAccountControl
+userAccountControl: 66048
+-
+
+dn: CN=Domain Admins,CN=Users,DC=domain,DC=local
+changetype: modify
+add: member
+member: CN={{.Username}},CN=Users,DC=domain,DC=local
+-
