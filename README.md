@@ -22,6 +22,8 @@ export VAULT_TOKEN=$(cat data.json | jq -r .vault_token.value)
 boundary authenticate
 ```
 
+> Note: This tutorial is supposed to be run in secuntial order making sure the enviromental variable installed above are used
+
 ## 2. Build an EC2 and access via Boundary
 
 The second steps consist on an EC2 instance deployed in a Public subnet (not quite the use case for Boundary). We are going to create a public key that will be associated to the instance and at the same time will be assigned to a Static Credential Store within Boundary. We are also going to build a route table that will connect the subnet where we are deploying the instance with HCP HVN.
@@ -383,7 +385,7 @@ pod/my-pod created
 Let's verify running pods in test namespace
 
 ```bash
-> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- get pods  -n test              
+> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- get pods  -n test            
 Credentials:
   Credential Source Description: Account for test namespace
   Credential Source ID:          clvlt_OhobkBhNnd
@@ -424,7 +426,6 @@ pod "my-pod" deleted
 ```
 
 ## Bonus
-
 
 ## 8. Clean Up
 
