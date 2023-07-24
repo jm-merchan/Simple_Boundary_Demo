@@ -432,6 +432,7 @@ In the BONUS/ directory you can find a few more examples around:
 * Dynamic Host Catalog
 * SSH Session Recording
 * RBAC
+* Integration with Postgres RDS
 
 ## 9. Clean Up
 
