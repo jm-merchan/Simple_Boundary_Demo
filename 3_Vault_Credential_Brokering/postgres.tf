@@ -22,15 +22,13 @@ resource "aws_security_group" "public_network_ssh_postgres" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    #cidr_blocks = ["${data.http.current.response_body}/32"]
   }
 
   ingress {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    cidr_blocks = ["172.25.16.0/20"] # HCP Network only - connecting via peering
-    #cidr_blocks = ["${data.http.current.response_body}/32"]
+    cidr_blocks = ["0.0.0.0/0"] 
   }
 
   egress {

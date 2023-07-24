@@ -452,6 +452,7 @@ cd vault_config
 terraform destroy -auto-approve
 
 cd ../../3_Vault_Credential_Brokering
+# See this https://github.com/hashicorp/vault/issues/9420 in case of issues removing the db engine
 terraform destroy -auto-approve
 
 cd ../2_First_target
