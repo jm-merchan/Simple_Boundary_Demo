@@ -249,7 +249,7 @@ To install the code
 ```bash
 cd ../6_Multi_hop/
 terraform init
-cp ../\#4_Vault_SSH_Injection/vault_ca.pub vault_ca.pub
+cp ../4_Vault_SSH_Injection/vault_ca.pub vault_ca.pub
 terraform apply -auto-approve
 ```
 
@@ -425,9 +425,15 @@ Credentials:
 pod "my-pod" deleted
 ```
 
-## Bonus
+## 8. Bonus
 
-## 8. Clean Up
+In the BONUS/ directory you can find a few more examples around:
+
+* Dynamic Host Catalog
+* SSH Session Recording
+* RBAC
+
+## 9. Clean Up
 
 To clean up we go to the main directory and from there
 
