@@ -39,6 +39,8 @@ Restart-Computer -Force
 
 Once installed and after the reboot, let's create a user that will be used by Vault to connect to the LDAP server
 
+> It takes a while for the Domain Controller to obtain the Group Policy Client
+
 ```powershell
 # Set the variables for the user
 $username = "john"
@@ -57,6 +59,15 @@ Add-ADGroupMember -Identity "Domain Admins" -Members $username
 To enable LDAPS, you can follow the steps in this tutorial: https://www.youtube.com/watch?v=xC3ujXGkh_c
 
 Basically, you will be installing Windows CA and then rebooting the server.
+
+```bash
+# Install Certificate Authority
+Install-WindowsFeature -Name ADCS-Cert-Authority -IncludeManagementTools
+Install-AdcsCertificationAuthority -CAType EnterpriseRootCA
+
+# Restart the server
+Restart-Computer -Force
+```
 
 ## Vault Configuration
 
