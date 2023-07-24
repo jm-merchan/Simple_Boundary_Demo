@@ -12,7 +12,7 @@ provider "vault" {
 }
 
 resource "boundary_scope" "org" {
-  name                     = "demo_organization"
+  name                     = "Dynamic Host Catalog Example"
   description              = "Used to demo Boundary capabilities."
   scope_id                 = "global"
   auto_create_admin_role   = true
