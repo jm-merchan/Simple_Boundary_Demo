@@ -26,7 +26,7 @@ resource "boundary_credential_store_vault" "vault" {
   address     = data.terraform_remote_state.local_backend.outputs.vault_public_url
   token       = data.terraform_remote_state.local_backend_vault.outputs.boundary_token
   scope_id    = boundary_scope.project.id
-  namespace = "admin"
+  namespace   = "admin"
 }
 
 resource "boundary_credential_library_vault_ssh_certificate" "ssh" {
@@ -68,9 +68,9 @@ resource "boundary_host_set_static" "ssh" {
 
 
 resource "boundary_target" "ssh" {
-  type                     = "ssh"
-  name                     = "ssh-target"
-  description              = "ssh-target"
+  type        = "ssh"
+  name        = "ssh-target"
+  description = "ssh-target"
   #egress_worker_filter     = " \"sm-egress-downstream-worker1\" in \"/tags/type\" "
   #ingress_worker_filter    = " \"sm-ingress-upstream-worker1\" in \"/tags/type\" "
   scope_id                 = boundary_scope.project.id
@@ -79,11 +79,11 @@ resource "boundary_target" "ssh" {
   host_source_ids = [
     boundary_host_set_static.ssh.id
   ]
-  
+
   # Comment this to avoid brokeing the credentials
-  
+
   injected_application_credential_source_ids = [
     boundary_credential_library_vault_ssh_certificate.ssh.id
   ]
-  
+
 }

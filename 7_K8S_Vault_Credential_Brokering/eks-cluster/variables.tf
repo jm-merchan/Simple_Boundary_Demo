@@ -5,7 +5,7 @@ variable "aws_region" {
 }
 
 variable "vpc_name" {
-  type = string
+  type    = string
   default = "eks-cluster"
 
 }

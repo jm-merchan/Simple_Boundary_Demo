@@ -27,7 +27,7 @@ resource "aws_instance" "boundary_downstream_worker" {
   subnet_id              = aws_subnet.public1.id
 
   # user_data_replace_on_change = false
-  user_data_base64            = data.cloudinit_config.boundary_egress_worker.rendered
+  user_data_base64 = data.cloudinit_config.boundary_egress_worker.rendered
 
   tags = {
     Name = "boundary-worker-downstream"

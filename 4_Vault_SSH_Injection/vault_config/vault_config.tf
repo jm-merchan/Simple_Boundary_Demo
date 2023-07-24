@@ -15,21 +15,21 @@ resource "vault_mount" "ssh" {
 }
 
 resource "vault_ssh_secret_backend_ca" "boundary" {
-    backend = vault_mount.ssh.path
-    generate_signing_key = true
+  backend              = vault_mount.ssh.path
+  generate_signing_key = true
 
-    provisioner "local-exec" {
-      command = "echo '${self.public_key}' > ../vault_ca.pub"
-    }
+  provisioner "local-exec" {
+    command = "echo '${self.public_key}' > ../vault_ca.pub"
+  }
 }
 
 
 resource "vault_token" "boundary_token" {
   no_default_policy = true
-  period = "24h"
-  policies = ["boundary-controller", "ssh"]
-  no_parent = true
-  renewable = true
+  period            = "24h"
+  policies          = ["boundary-controller", "ssh"]
+  no_parent         = true
+  renewable         = true
 
 
   renew_min_lease = 43200
@@ -42,14 +42,14 @@ resource "vault_token" "boundary_token" {
 
 
 resource "vault_ssh_secret_backend_role" "signer" {
-  backend             = vault_mount.ssh.path
-  name                = "boundary-client"
-  key_type = "ca"
+  backend                 = vault_mount.ssh.path
+  name                    = "boundary-client"
+  key_type                = "ca"
   allow_user_certificates = true
-  default_user= "ubuntu"
+  default_user            = "ubuntu"
   default_extensions = {
-    "permit-pty": ""
+    "permit-pty" : ""
   }
-  allowed_users = "*"
-  allowed_extensions = "*"  
+  allowed_users      = "*"
+  allowed_extensions = "*"
 }

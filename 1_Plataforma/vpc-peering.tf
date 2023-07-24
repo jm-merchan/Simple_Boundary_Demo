@@ -4,7 +4,7 @@ provider "aws" {
 
 resource "aws_vpc" "peer" {
   cidr_block = var.aws_vpc_cidr
-  
+
   tags = {
     Name = "Boundary"
   }
@@ -41,7 +41,7 @@ resource "aws_security_group" "allow_vault_egress_ingress" {
     protocol    = "tcp"
     cidr_blocks = ["172.25.16.0/20"]
   }
-  
+
 }
 
 resource "hcp_hvn" "hvn" {

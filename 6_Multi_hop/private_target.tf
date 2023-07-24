@@ -19,16 +19,16 @@ locals {
   cloud_config_config = <<-END
     #cloud-config
     ${jsonencode({
-      write_files = [
-        {
-          path        = "/etc/ssh/ca-key.pub"
-          permissions = "0644"
-          owner       = "root:root"
-          encoding    = "b64"
-          content     = filebase64("vault_ca.pub")
-        },
-      ]
-    })}
+  write_files = [
+    {
+      path        = "/etc/ssh/ca-key.pub"
+      permissions = "0644"
+      owner       = "root:root"
+      encoding    = "b64"
+      content     = filebase64("vault_ca.pub")
+    },
+  ]
+})}
   END
 }
 
@@ -41,7 +41,7 @@ data "cloudinit_config" "ssh" {
   base64_encode = true
   part {
     content_type = "text/cloud-config"
-    content = local.cloud_config_config
+    content      = local.cloud_config_config
   }
   part {
     content_type = "text/x-shellscript"

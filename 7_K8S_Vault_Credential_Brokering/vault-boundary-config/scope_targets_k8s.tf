@@ -20,10 +20,10 @@ resource "boundary_credential_store_vault" "vault" {
   name        = "vault"
   description = "Vault Credential Store for Kubernetes access"
   # Connecting via peering
-  address     = data.terraform_remote_state.local_backend.outputs.vault_private_url
-  token       = vault_token.boundary_token_k8s.client_token
-  scope_id    = boundary_scope.project.id
-  namespace   = "admin"
+  address   = data.terraform_remote_state.local_backend.outputs.vault_private_url
+  token     = vault_token.boundary_token_k8s.client_token
+  scope_id  = boundary_scope.project.id
+  namespace = "admin"
   # Connecting via peering
   worker_filter = " \"worker1\" in \"/tags/type\" "
 }

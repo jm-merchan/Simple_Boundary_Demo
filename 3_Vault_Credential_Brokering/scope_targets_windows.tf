@@ -26,7 +26,7 @@ resource "boundary_credential_store_vault" "vault_w" {
   address     = data.terraform_remote_state.local_backend.outputs.vault_public_url
   token       = vault_token.boundary_token_kv.client_token
   scope_id    = boundary_scope.project_w.id
-  namespace = "admin"
+  namespace   = "admin"
 }
 
 resource "boundary_credential_library_vault" "windows" {
@@ -68,11 +68,11 @@ resource "boundary_target" "win_rdp" {
   host_source_ids = [
     boundary_host_set_static.win.id
   ]
-  
+
   brokered_credential_source_ids = [
     boundary_credential_library_vault.windows.id
   ]
-  
+
 }
 
 resource "boundary_target" "win_http" {

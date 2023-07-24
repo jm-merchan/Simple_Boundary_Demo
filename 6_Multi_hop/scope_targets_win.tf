@@ -50,10 +50,10 @@ resource "boundary_credential_store_static" "example" {
 }
 
 resource "boundary_credential_username_password" "example" {
-  name                   = "RDP Credentials"
-  description            = "Credentials for Windows Host"
-  credential_store_id    = boundary_credential_store_static.example.id
-  username               = "Administrator"
+  name                = "RDP Credentials"
+  description         = "Credentials for Windows Host"
+  credential_store_id = boundary_credential_store_static.example.id
+  username            = "Administrator"
   password            = rsadecrypt(aws_instance.windows-server.password_data, file("../2_First_target/${var.key_pair_name}.pem"))
 
 }
@@ -70,8 +70,8 @@ resource "boundary_target" "win" {
   host_source_ids = [
     boundary_host_set_static.win.id
   ]
-  
-   # Comment this to avoid brokeing the credentials
+
+  # Comment this to avoid brokeing the credentials
   brokered_credential_source_ids = [
     boundary_credential_username_password.example.id
   ]
@@ -80,10 +80,10 @@ resource "boundary_target" "win" {
 
 
 resource "boundary_target" "win_http" {
-  type                     = "tcp"
-  name                     = "win-http-target-private-multi"
-  description              = "win-http-target"
-  egress_worker_filter     = " \"worker-multi\" in \"/tags/type\" "
+  type                 = "tcp"
+  name                 = "win-http-target-private-multi"
+  description          = "win-http-target"
+  egress_worker_filter = " \"worker-multi\" in \"/tags/type\" "
   # ingress_worker_filter    = " \"true\" in \"/tags/boundary.cloud.hashicorp.com:managed\" "
   ingress_worker_filter    = " \"worker1\" in \"/tags/type\" "
   scope_id                 = boundary_scope.project_w.id
@@ -92,7 +92,7 @@ resource "boundary_target" "win_http" {
   host_source_ids = [
     boundary_host_set_static.win.id
   ]
-  
+
   # Comment this to avoid brokeing the credentials
   /*
   injected_application_credential_source_ids = [

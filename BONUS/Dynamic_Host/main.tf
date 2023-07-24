@@ -10,8 +10,14 @@ terraform {
       source  = "hashicorp/aws"
       version = "4.46.0"
     }
+
+    time = {
+      source  = "hashicorp/time"
+      version = "0.9.1"
+    }
   }
 }
 
+provider "time" {}
 
 

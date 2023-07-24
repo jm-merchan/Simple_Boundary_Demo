@@ -19,11 +19,11 @@ resource "aws_instance" "windows-server" {
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.private1.id
   vpc_security_group_ids = [aws_security_group.privatesg.id]
-  
-  source_dest_check      = false
-  key_name               = data.aws_key_pair.example.key_name
-  get_password_data      = true
-  user_data              = <<EOF
+
+  source_dest_check = false
+  key_name          = data.aws_key_pair.example.key_name
+  get_password_data = true
+  user_data         = <<EOF
     <powershell>
     # Rename Machine
     Rename-Computer -NewName "Windows-private-subnet" -Force;

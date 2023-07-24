@@ -37,7 +37,7 @@ provider "boundary" {
 }
 
 provider "vault" {
-  address   = data.terraform_remote_state.local_backend.outputs.vault_public_url
+  address = data.terraform_remote_state.local_backend.outputs.vault_public_url
   # token     = var.vault_token
   namespace = "admin" # Set for HCP Vault
 }

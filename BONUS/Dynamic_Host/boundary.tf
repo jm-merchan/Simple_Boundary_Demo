@@ -37,31 +37,34 @@ resource "boundary_host_catalog_plugin" "aws_example" {
     "disable_credential_rotation" = true
   })
   secrets_json = jsonencode({
-    "access_key_id"      = aws_iam_access_key.boundary_dynamic_host_catalog.id
+    "access_key_id" = aws_iam_access_key.boundary_dynamic_host_catalog.id
     #"access_key_id"     = aws_iam_user.boundary.id
-    "secret_access_key"  = aws_iam_access_key.boundary_dynamic_host_catalog.secret
+    "secret_access_key" = aws_iam_access_key.boundary_dynamic_host_catalog.secret
     #"secret_access_key" = aws_iam_access_key.secret
   })
+
+  depends_on = [time_sleep.boundary_dynamic_host_catalog_user_ready]
+
 }
 
 resource "boundary_host_set_plugin" "database" {
-  name            = "Database host_set_plugin"
-  host_catalog_id = boundary_host_catalog_plugin.aws_example.id
-  attributes_json = jsonencode({ "filters" = ["tag:service-type=database"] })
+  name                = "Database host_set_plugin"
+  host_catalog_id     = boundary_host_catalog_plugin.aws_example.id
+  attributes_json     = jsonencode({ "filters" = ["tag:service-type=database"] })
   preferred_endpoints = ["dns:ec2*"]
 }
 
 resource "boundary_host_set_plugin" "dev" {
-  name            = "Dev host_set_plugin"
-  host_catalog_id = boundary_host_catalog_plugin.aws_example.id
-  attributes_json = jsonencode({ "filters" = ["tag:application=dev"] })
+  name                = "Dev host_set_plugin"
+  host_catalog_id     = boundary_host_catalog_plugin.aws_example.id
+  attributes_json     = jsonencode({ "filters" = ["tag:application=dev"] })
   preferred_endpoints = ["dns:ec2*"]
 }
 
 resource "boundary_host_set_plugin" "production" {
-  name            = "production host_set_plugin"
-  host_catalog_id = boundary_host_catalog_plugin.aws_example.id
-  attributes_json = jsonencode({ "filters" = ["tag:application=production"] })
+  name                = "production host_set_plugin"
+  host_catalog_id     = boundary_host_catalog_plugin.aws_example.id
+  attributes_json     = jsonencode({ "filters" = ["tag:application=production"] })
   preferred_endpoints = ["dns:ec2*"]
 }
 
@@ -87,10 +90,10 @@ resource "boundary_target" "database" {
   session_connection_limit = -1
   default_port             = 22
   host_source_ids = [
-    boundary_host_set_plugin.database.id, 
+    boundary_host_set_plugin.database.id,
   ]
-  
-   # Comment this to avoid brokeing the credentials
+
+  # Comment this to avoid brokeing the credentials
   brokered_credential_source_ids = [
     boundary_credential_ssh_private_key.example.id
   ]
@@ -104,10 +107,10 @@ resource "boundary_target" "dev" {
   session_connection_limit = -1
   default_port             = 22
   host_source_ids = [
-    boundary_host_set_plugin.dev.id, 
+    boundary_host_set_plugin.dev.id,
   ]
-  
-   # Comment this to avoid brokeing the credentials
+
+  # Comment this to avoid brokeing the credentials
   brokered_credential_source_ids = [
     boundary_credential_ssh_private_key.example.id
   ]
@@ -121,10 +124,10 @@ resource "boundary_target" "production" {
   session_connection_limit = -1
   default_port             = 22
   host_source_ids = [
-    boundary_host_set_plugin.production.id, 
+    boundary_host_set_plugin.production.id,
   ]
-  
-   # Comment this to avoid brokeing the credentials
+
+  # Comment this to avoid brokeing the credentials
   brokered_credential_source_ids = [
     boundary_credential_ssh_private_key.example.id
   ]

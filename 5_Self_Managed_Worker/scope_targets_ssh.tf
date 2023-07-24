@@ -22,10 +22,10 @@ resource "boundary_scope" "project" {
 
 resource "vault_token" "boundary_token" {
   no_default_policy = true
-  period = "24h"
-  policies = ["boundary-controller", "ssh"]
-  no_parent = true
-  renewable = true
+  period            = "24h"
+  policies          = ["boundary-controller", "ssh"]
+  no_parent         = true
+  renewable         = true
 
 
   renew_min_lease = 43200
@@ -40,7 +40,7 @@ resource "null_resource" "delay" {
   provisioner "local-exec" {
     command = "sleep 60"
   }
-  depends_on = [ aws_instance.boundary_upstream_worker ]
+  depends_on = [aws_instance.boundary_upstream_worker]
 }
 
 
@@ -48,14 +48,14 @@ resource "boundary_credential_store_vault" "vault" {
   name        = "certificates-store"
   description = "My second Vault credential store!"
   # address     = data.terraform_remote_state.local_backend.outputs.vault_public_url
-  address     = data.terraform_remote_state.local_backend.outputs.vault_private_url
-  token       = vault_token.boundary_token.client_token
-  scope_id    = boundary_scope.project.id
+  address   = data.terraform_remote_state.local_backend.outputs.vault_private_url
+  token     = vault_token.boundary_token.client_token
+  scope_id  = boundary_scope.project.id
   namespace = "admin"
   # Adding worker filter to send request to Vault via Worker, worker that has access to Vault via HVN peering
   worker_filter = " \"worker1\" in \"/tags/type\" "
   # Introducing some delay to let the worker start up
-  depends_on = [ null_resource.delay ]
+  depends_on = [null_resource.delay]
 }
 
 resource "boundary_credential_library_vault_ssh_certificate" "ssh" {
@@ -107,11 +107,11 @@ resource "boundary_target" "ssh" {
   host_source_ids = [
     boundary_host_set_static.ssh.id
   ]
-  
+
   # Comment this to avoid brokering the credentials
-  
+
   injected_application_credential_source_ids = [
     boundary_credential_library_vault_ssh_certificate.ssh.id
   ]
-  
+
 }

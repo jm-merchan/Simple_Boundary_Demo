@@ -59,7 +59,7 @@ resource "aws_route_table" "rt" {
     gateway_id = data.aws_internet_gateway.default.id
   }
 
-    # Route traffic to the HVN peering connection
+  # Route traffic to the HVN peering connection
   route {
     cidr_block                = "172.25.16.0/20"
     vpc_peering_connection_id = data.terraform_remote_state.local_backend.outputs.peering_id

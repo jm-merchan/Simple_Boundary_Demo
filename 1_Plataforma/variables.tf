@@ -1,7 +1,7 @@
 variable "boundary_cluster_id" {
   description = "The ID of the HCP Boundary cluster."
   type        = string
-  default     = "boundary-cluster"
+  default     = "hcp-boundary-cluster"
 }
 
 
@@ -22,7 +22,7 @@ variable "hvn_id" {
 variable "vault_cluster_id" {
   description = "The ID of the HCP Vault cluster."
   type        = string
-  default     = "vault-cluster-for-boundary"
+  default     = "hcp-vault-cluster-for-boundary"
 }
 
 variable "peering_id" {

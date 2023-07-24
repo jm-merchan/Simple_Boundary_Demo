@@ -9,7 +9,7 @@ data "aws_ami" "ubuntu_ami" {
     name   = "virtualization-type"
     values = ["hvm"]
   }
-  owners = ["099720109477"]  # Canonical account ID
+  owners = ["099720109477"] # Canonical account ID
 }
 
 
@@ -25,7 +25,7 @@ resource "aws_security_group" "public_network_ssh" {
     cidr_blocks = ["0.0.0.0/0"]
     #cidr_blocks = ["${data.http.current.response_body}/32"]
   }
-  
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -42,12 +42,12 @@ resource "aws_security_group" "public_network_ssh" {
 data "aws_subnet" "example_subnet" {
   filter {
     name   = "cidr-block"
-    values = ["172.31.1.0/24"]  
+    values = ["172.31.1.0/24"]
   }
 
   filter {
     name   = "vpc-id"
-    values = [data.terraform_remote_state.local_backend.outputs.vpc]  
+    values = [data.terraform_remote_state.local_backend.outputs.vpc]
   }
 }
 
@@ -60,27 +60,27 @@ locals {
   cloud_config_config = <<-END
     #cloud-config
     ${jsonencode({
-      write_files = [
-        {
-          path        = "/etc/ssh/ca-key.pub"
-          permissions = "0644"
-          owner       = "root:root"
-          encoding    = "b64"
-          content     = filebase64("vault_ca.pub")
-        },
-      ]
-    })}
+  write_files = [
+    {
+      path        = "/etc/ssh/ca-key.pub"
+      permissions = "0644"
+      owner       = "root:root"
+      encoding    = "b64"
+      content     = filebase64("vault_ca.pub")
+    },
+  ]
+})}
   END
 }
 
 
 resource "aws_instance" "ssh_injection_target" {
   #count                  = 1
-  ami               = data.aws_ami.ubuntu_ami.id
-  instance_type     = "t2.micro"
-  key_name          = data.aws_key_pair.example.key_name
+  ami                    = data.aws_ami.ubuntu_ami.id
+  instance_type          = "t2.micro"
+  key_name               = data.aws_key_pair.example.key_name
   vpc_security_group_ids = [aws_security_group.public_network_ssh.id]
-  subnet_id = data.aws_subnet.example_subnet.id
+  subnet_id              = data.aws_subnet.example_subnet.id
 
   user_data_replace_on_change = true
   user_data_base64            = data.cloudinit_config.ssh.rendered
@@ -99,7 +99,7 @@ data "cloudinit_config" "ssh" {
   base64_encode = true
   part {
     content_type = "text/cloud-config"
-    content = local.cloud_config_config
+    content      = local.cloud_config_config
   }
   part {
     content_type = "text/x-shellscript"

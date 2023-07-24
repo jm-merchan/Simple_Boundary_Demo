@@ -49,12 +49,12 @@ resource "aws_security_group" "public_network_ssh_postgres" {
 data "aws_subnet" "example_subnet" {
   filter {
     name   = "cidr-block"
-    values = ["172.31.1.0/24"]  
+    values = ["172.31.1.0/24"]
   }
 
   filter {
     name   = "vpc-id"
-    values = [data.terraform_remote_state.local_backend.outputs.vpc]  
+    values = [data.terraform_remote_state.local_backend.outputs.vpc]
   }
 }
 
