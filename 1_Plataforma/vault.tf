@@ -9,7 +9,7 @@
 resource "hcp_vault_cluster" "hcp_vault" {
   hvn_id          = hcp_hvn.hvn.hvn_id
   cluster_id      = var.vault_cluster_id
-  tier            = var.tier
+  tier            = var.vault_tier
   public_endpoint = true
   /*
   Remove stanzas below if not required

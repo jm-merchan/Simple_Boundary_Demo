@@ -49,10 +49,16 @@ variable "cloud_provider" {
   default     = "aws"
 }
 
-variable "tier" {
+variable "vault_tier" {
   description = "Tier of the HCP Vault cluster. Valid options for tiers."
   type        = string
   default     = "standard"
+}
+
+variable "boundary_tier" {
+  description = "Tier of the HCP Boundary cluster. Valid options for tiers."
+  type        = string
+  default     = "STANDARD"
 }
 
 # Remove if not rquired
