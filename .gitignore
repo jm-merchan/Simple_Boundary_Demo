@@ -8,4 +8,5 @@ data.json
 *domain*
 *crt
 token.txt
-/Session_Recording*
+*.log
+**/Session_Recording*
