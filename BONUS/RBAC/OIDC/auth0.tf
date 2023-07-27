@@ -9,7 +9,6 @@ resource "random_string" "random" {
 
 
 resource "auth0_user" "user" {
-
   for_each = {
     "random1" = random_string.random[0].result
     "random2" = random_string.random[1].result
@@ -17,7 +16,6 @@ resource "auth0_user" "user" {
     "random4" = random_string.random[3].result
   }
   connection_name = "Username-Password-Authentication"
-  # username        = "${var.auth0_username}{$random_string.random.result}"
   name           = "${var.auth0_name}${each.value}"
   email          = "${var.auth0_name}${each.value}@boundaryproject.io"
   email_verified = true

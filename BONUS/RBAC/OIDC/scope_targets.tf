@@ -54,7 +54,7 @@ resource "boundary_account_oidc" "oidc_user" {
   name           = each.value.name
   description    = "OIDC account for ${each.value.name}"
   auth_method_id = boundary_auth_method_oidc.provider.id
-  issuer         = "https://${data.auth0_tenant.tenant.domain}/" # updateme
+  issuer         = "https://${data.auth0_tenant.tenant.domain}/" 
   subject        = each.value.user_id
 }
 
