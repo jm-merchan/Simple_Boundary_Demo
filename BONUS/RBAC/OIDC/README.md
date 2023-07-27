@@ -98,3 +98,9 @@ Users are given full-admin permissions at child-org level
 | Users role                                     | Group role                                     |
 | ---------------------------------------------- | ---------------------------------------------- |
 | ![1690490048363](image/README/1690490048363.png) | ![1690490073115](image/README/1690490073115.png) |
+
+## Clean Up
+
+```bash
+terraform destroy -auto-approve
+```
