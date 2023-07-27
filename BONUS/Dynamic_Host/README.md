@@ -15,11 +15,21 @@ There are some additions to what is contained in that tutorial:
      attributes_json = jsonencode({ "filters" = ["tag:application=dev"] })
      preferred_endpoints = ["dns:ec2*"]
    }
+
    ```
+
+To get this up and running
+
+```bash
+cd BONUS/Dynamic_Host
+terraform init
+terraform apply -auto-approve
+```
+
 
 ![1689868385362](image/README/1689868385362.png)
 
-The result of this would be a new organization called "demo_organization" that contains three targets. 
+The result of this would be a new organization called "demo_organization" that contains three targets.
 
 ![1689868447109](image/README/1689868447109.png)
 
