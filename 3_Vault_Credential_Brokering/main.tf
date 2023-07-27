@@ -30,8 +30,8 @@ provider "aws" {
 # Declare the provider for the HashiCorp Boundary resource to be managed by Terraform
 provider "boundary" {
   # Use variables to provide values for the provider configuration
-  addr = data.terraform_remote_state.local_backend.outputs.boundary_public_url
-  # auth_method_id                  = var.auth_method
+  addr                   = ""
+  auth_method_id         = var.authmethod
   auth_method_login_name = var.username
   auth_method_password   = var.password
 }

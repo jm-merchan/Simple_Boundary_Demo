@@ -9,3 +9,7 @@ variable "password" {
 variable "kubernetes_host" {
   type = string
 }
+
+variable "authmethod" {
+  type = string
+}

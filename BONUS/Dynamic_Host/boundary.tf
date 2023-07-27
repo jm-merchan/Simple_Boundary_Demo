@@ -2,9 +2,11 @@
 
 # Declare the provider for the HashiCorp Boundary resource to be managed by Terraform
 provider "boundary" {
+  # Use variables to provide values for the provider configuration
+  addr                   = ""
+  auth_method_id         = var.authmethod
   auth_method_login_name = var.username
   auth_method_password   = var.password
-  addr                   = ""
 }
 
 provider "vault" {

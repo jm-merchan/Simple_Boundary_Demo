@@ -25,3 +25,7 @@ variable "windows_instance_name" {
 variable "key_pair_name" {
   type = string
 }
+
+variable "authmethod" {
+  type = string
+}

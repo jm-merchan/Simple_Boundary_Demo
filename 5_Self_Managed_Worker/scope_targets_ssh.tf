@@ -38,7 +38,7 @@ resource "vault_token" "boundary_token" {
 
 resource "null_resource" "delay" {
   provisioner "local-exec" {
-    command = "sleep 60"
+    command = "sleep 120" #Adding a bit of delay
   }
   depends_on = [aws_instance.boundary_upstream_worker]
 }

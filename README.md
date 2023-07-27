@@ -20,6 +20,7 @@ export VAULT_ADDR=$(cat data.json | jq -r .vault_public_url.value)
 export VAULT_NAMESPACE=admin
 export VAULT_TOKEN=$(cat data.json | jq -r .vault_token.value)
 boundary authenticate
+export TF_VAR_authmethod=$(boundary auth-methods list -format json | jq -r '.items[0].id')
 ```
 
 > Note: This tutorial is supposed to be run in secuntial order making sure the enviromental variable installed above are used
