@@ -386,7 +386,7 @@ pod/my-pod created
 Let's verify running pods in test namespace
 
 ```bash
-> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- get pods  -n test            
+> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- get pods  -n test          
 Credentials:
   Credential Source Description: Account for test namespace
   Credential Source ID:          clvlt_OhobkBhNnd
@@ -437,7 +437,9 @@ In the BONUS/ directory you can find a few more examples around:
 
 ## 9. Clean Up
 
-To clean up we go to the main directory and from there
+To clean up, we go to the main directory and from there
+
+> If you get a 403 error relative to the Vault token run (`apply`) step 1 to update Vault token.
 
 ```bash
 cd 7_K8S_Vault_Credential_Brokering/vault-boundary-config

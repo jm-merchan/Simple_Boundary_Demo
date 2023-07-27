@@ -8,7 +8,7 @@ This repo make uses of boundary_team_acctest_dev and associated repo. Using that
 * SSH Injected Secret using Boundary Credential Storage
 
 ```bash
-cd boundary-aws-demo-stack/
+cd BONUS/Session_Recording/boundary-aws-demo-stack
 cp <aws_cred>
 terraform init
 terraform apply -auto-approve
@@ -22,3 +22,14 @@ This will create a new Org in our Boundary Cluster with a single target (making 
 We can connect as usual. Once done, if we go to Boundary web UI we can see the recordings in the Global Org
 
 ![1690364253129](image/README/1690364253129.png)
+
+## Clean Up
+
+```bash
+terraform destroy -auto-approve
+unset AWS_REGION
+unset AWS_ACCESS_KEY_ID
+unset AWS_SECRET_ACCESS_KEY
+unset AWS_SESSION_TOKEN
+rm -rf key.pem
+```
