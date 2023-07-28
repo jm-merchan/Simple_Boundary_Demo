@@ -1,0 +1,148 @@
+provider "boundary" {
+  # Use variables to provide values for the provider configuration
+  addr                   = ""
+  auth_method_id         = var.authmethod
+  auth_method_login_name = var.username
+  auth_method_password   = var.password
+}
+
+resource "boundary_scope" "org" {
+  name                     = "Dynamic Host and SSH Recording"
+  description              = "Used to demo Boundary capabilities."
+  scope_id                 = "global"
+  auto_create_admin_role   = true
+  auto_create_default_role = true
+}
+
+resource "boundary_scope" "project" {
+  name                   = "demo_dynamic_host_catalog"
+  description            = "SSH Recording"
+  scope_id               = boundary_scope.org.id
+  auto_create_admin_role = true
+}
+/*
+resource "boundary_host_catalog_plugin" "aws_example" {
+  name        = "AWS Host Catalog"
+  description = "Host catalog in AWS"
+  scope_id    = boundary_scope.project.id
+  plugin_name = "aws"
+
+  attributes_json = jsonencode({
+    "region"                      = "us-east-1",
+    "disable_credential_rotation" = true
+  })
+  secrets_json = jsonencode({
+    "access_key_id"     = aws_iam_access_key.user_initial_key.0.id
+    "secret_access_key" = aws_iam_access_key.user_initial_key.0.secret
+  })
+
+  depends_on = [time_sleep.boundary_ready]
+
+}
+
+resource "boundary_host_set_plugin" "ec2" {
+  name                = "EC2 host_set_plugin"
+  host_catalog_id     = boundary_host_catalog_plugin.aws_example.id
+  attributes_json     = jsonencode({ "filters" = ["tag:Name=demo-ec2-${local.hashicorp_email}"] })
+  preferred_endpoints = ["cidr:10.0.0.0/16"]
+}
+
+
+resource "boundary_credential_store_static" "example" {
+  name        = "credential_store"
+  description = "Credential Store for Dynamic Hosts"
+  scope_id    = boundary_scope.project.id
+}
+
+resource "boundary_credential_ssh_private_key" "example" {
+  name                = "ssh_private_key"
+  description         = "ssh private key credential!"
+  credential_store_id = boundary_credential_store_static.example.id
+  username            = "ubuntu"
+  private_key         = tls_private_key.demo_ec2_ssh_key.private_key_pem
+}
+
+resource "boundary_target" "ec2" {
+  type                     = "ssh"
+  name                     = "dynamic EC2"
+  description              = "Dynamic Hosts EC2"
+  scope_id                 = boundary_scope.project.id
+  session_connection_limit = -1
+  default_port             = 22
+  ingress_worker_filter    = " \"worker2\" in \"/tags/type\" "
+  host_source_ids = [
+    boundary_host_set_plugin.ec2.id
+  ]
+
+  enable_session_recording = true
+  storage_bucket_id        = boundary_storage_bucket.aws_example.id
+
+  injected_application_credential_source_ids = [
+    boundary_credential_ssh_private_key.example.id
+  ]
+
+  depends_on = [time_sleep.boundary_ready2]
+}
+
+
+
+
+resource "time_sleep" "boundary_ready" {
+  create_duration = "120s"
+
+  depends_on = [aws_instance.boundary_upstream_worker]
+}
+
+resource "time_sleep" "boundary_ready2" {
+  create_duration = "60s"
+
+  depends_on = [boundary_storage_bucket.aws_example]
+}
+
+resource "boundary_storage_bucket" "aws_example" {
+  name        = "Storage Bucket"
+  description = "My first storage bucket!"
+  scope_id    = "global"
+  plugin_name = "aws"
+  bucket_name = aws_s3_bucket.storage_bucket.id
+  attributes_json = jsonencode({
+    "region" = "us-east-1",
+  "disable_credential_rotation" : true })
+
+  # recommended to pass in aws secrets using a file() or using environment variables
+  # the secrets below must be generated in aws by creating a aws iam user with programmatic access
+  secrets_json = jsonencode({
+    "access_key_id"     = aws_iam_access_key.storage_user_key.id
+    "secret_access_key" = aws_iam_access_key.storage_user_key.secret
+  })
+  worker_filter = " \"worker2\" in \"/tags/type\" "
+
+  depends_on = [time_sleep.boundary_ready]
+}
+
+*/
+
+resource "aws_instance" "boundary_upstream_worker" {
+  #count                  = 1
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = "t2.micro"
+  key_name               = aws_key_pair.demo_ec2_ssh_key_pair.id
+  vpc_security_group_ids = [aws_security_group.security_group.id]
+  subnet_id              = aws_subnet.subnet.id
+
+  # user_data_replace_on_change = false
+  user_data_base64 = data.cloudinit_config.boundary_ingress_worker.rendered
+
+  tags = {
+    "Name" : "boundary-worker-upstream-${local.hashicorp_email}"
+    "User" : local.hashicorp_email
+  }
+
+  lifecycle {
+    ignore_changes = [
+      user_data_base64,
+    ]
+  }
+}
+
+

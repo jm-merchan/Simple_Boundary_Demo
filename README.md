@@ -13,12 +13,14 @@ cd 1_Plataforma/
 
 <export AWS Creds>
 terraform init
+# Requires interactive login to HCP to approve cluster creation
 terraform apply -auto-approve
 terraform output -json > data.json
 export BOUNDARY_ADDR=$(cat data.json | jq -r .boundary_public_url.value)
 export VAULT_ADDR=$(cat data.json | jq -r .vault_public_url.value)
 export VAULT_NAMESPACE=admin
 export VAULT_TOKEN=$(cat data.json | jq -r .vault_token.value)
+# Log to boundary interactively using password Auth with admin user
 boundary authenticate
 export TF_VAR_authmethod=$(boundary auth-methods list -format json | jq -r '.items[0].id')
 ```
@@ -386,7 +388,7 @@ pod/my-pod created
 Let's verify running pods in test namespace
 
 ```bash
-> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- get pods  -n test          
+> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- get pods  -n test        
 Credentials:
   Credential Source Description: Account for test namespace
   Credential Source ID:          clvlt_OhobkBhNnd
@@ -435,7 +437,77 @@ In the BONUS/ directory you can find a few more examples around:
 * RBAC
 * Integration with Postgres RDS
 
-## 9. Clean Up
+## 9. All in one go
+
+```bash
+<export AWS Creds>
+# Step 1
+cd 1_Plataforma/
+terraform init
+terraform apply -auto-approve
+terraform output -json > data.json
+export BOUNDARY_ADDR=$(cat data.json | jq -r .boundary_public_url.value)
+export VAULT_ADDR=$(cat data.json | jq -r .vault_public_url.value)
+export VAULT_NAMESPACE=admin
+export VAULT_TOKEN=$(cat data.json | jq -r .vault_token.value)
+boundary authenticate
+export TF_VAR_authmethod=$(boundary auth-methods list -format json | jq -r '.items[0].id')
+
+# Step 2
+cd ../2_First_target
+terraform init
+# We will be creating first the key
+terraform apply -auto-approve -target=aws_key_pair.ec2_key -target=tls_private_key.rsa_4096_key
+# Then the rest of the configuration
+terraform apply -auto-approve
+
+# Step 3
+cd ../3_Vault_Credential_Brokering
+terraform init
+# We build first the two EC2 instances
+terraform apply -auto-approve -target=aws_instance.postgres_target -target=aws_instance.windows-server
+# Then the Vault and Boundary configuration
+terraform apply -auto-approve
+
+# Step 4
+cd ../4_Vault_SSH_Injection/vault_config
+terraform init
+terraform apply -auto-approve
+cd ..
+terraform init 
+terraform apply -auto-approve
+
+# Step 5
+cd ../5_Self_Managed_Worker/
+terraform init
+cp ../4_Vault_SSH_Injection/vault_ca.pub vault_ca.pub
+terraform apply -auto-approve
+
+# Step 6
+cd ../6_Multi_hop/
+terraform init
+cp ../4_Vault_SSH_Injection/vault_ca.pub vault_ca.pub
+terraform apply -auto-approve
+
+# Step 7
+cd ../7_K8S_Vault_Credential_Brokering/eks-cluster
+terraform init
+terraform apply -auto-approve
+export TF_VAR_kubernetes_host=$(terraform output -raw cluster_endpoint)
+# Set kubeconfig to use the cluster just generated
+aws eks --region $(terraform output -raw region) update-kubeconfig  --name $(terraform output -raw cluster_name)
+cd ../vault-boundary-config
+kubectl create ns vault
+kubectl create sa vault -n vault
+kubectl create ns test
+kubectl apply -f .
+kubectl get secret -n vault $(kubectl get sa vault -n vault -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 --decode > token.txt
+kubectl get secret -n vault $(kubectl get sa vault -n vault -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.ca\.crt}' | base64 --decode > ca.crt
+terraform init
+terraform apply -auto-approve
+```
+
+## 10. Clean Up
 
 To clean up, we go to the main directory and from there
 
@@ -467,7 +539,7 @@ terraform destroy -auto-approve
 
 cd ../2_First_target
 terraform destroy -auto-approve
-rm cert.pem
+rm -rf cert.pem
 
 cd ../1_Plataforma
 rm data.json
