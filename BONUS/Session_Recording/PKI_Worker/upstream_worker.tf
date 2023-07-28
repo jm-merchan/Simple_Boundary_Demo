@@ -43,7 +43,7 @@ resource "aws_instance" "boundary_upstream_worker" {
 
 resource "boundary_worker" "ingress_pki_worker" {
   scope_id                    = "global"
-  name                        = "boundary-session-recording-pki-worker"
+  name                        = "recording-pki-worker"
   worker_generated_auth_token = ""
 
 }
@@ -74,7 +74,7 @@ locals {
   boundary_ingress_worker_hcl_config = <<-WORKER_HCL_CONFIG
   disable_mlock = true
 
-  hcp_boundary_cluster_id = "a64b51e8-1a10-4fbc-861e-c746fc184f5f" # Change this
+  hcp_boundary_cluster_id = "${split(".", split("//", data.terraform_remote_state.local_backend.outputs.boundary_public_url)[1])[0]}"
 
   listener "tcp" {
     address = "0.0.0.0:9202"

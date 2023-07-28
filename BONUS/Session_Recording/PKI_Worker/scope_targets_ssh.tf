@@ -37,13 +37,13 @@ resource "vault_token" "boundary_token" {
 }
 
 resource "time_sleep" "boundary_ready" {
-  create_duration = "120s"
+  create_duration = "60s"
 
   depends_on = [aws_instance.boundary_upstream_worker]
 }
 
 resource "time_sleep" "boundary_ready2" {
-  create_duration = "60s"
+  create_duration = "20s"
 
   depends_on = [boundary_storage_bucket.aws_example]
 }
@@ -123,7 +123,7 @@ resource "boundary_host_set_static" "ssh" {
 
 resource "boundary_target" "ec2" {
   type                     = "ssh"
-  name                     = "SSH Session Recording Target"
+  name                     = "SSH_Session_Recording_Target"
   description              = "Static Ubuntu"
   scope_id                 = boundary_scope.project.id
   session_connection_limit = -1
@@ -134,7 +134,7 @@ resource "boundary_target" "ec2" {
   ]
 
   enable_session_recording = true
-  storage_bucket_id        = data.terraform_remote_state.local_backend_recording.outputs.bucket_name
+  storage_bucket_id        = boundary_storage_bucket.aws_example.id
 
   injected_application_credential_source_ids = [
     boundary_credential_library_vault_ssh_certificate.ssh.id
