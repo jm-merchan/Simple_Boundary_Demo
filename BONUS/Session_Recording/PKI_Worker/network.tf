@@ -111,7 +111,7 @@ resource "aws_security_group" "publicsg" {
 }
 
 resource "aws_security_group" "privatesg" {
-  name        = "privatesg"
+  name        = "sshrecording-privatesg"
   description = "Allow traffic"
   vpc_id      = data.terraform_remote_state.local_backend.outputs.vpc
 
