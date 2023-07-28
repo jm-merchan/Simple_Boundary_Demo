@@ -388,7 +388,7 @@ pod/my-pod created
 Let's verify running pods in test namespace
 
 ```bash
-> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- get pods  -n test      
+> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- get pods  -n test    
 Credentials:
   Credential Source Description: Account for test namespace
   Credential Source ID:          clvlt_OhobkBhNnd
@@ -542,7 +542,7 @@ terraform destroy -auto-approve
 rm -rf cert.pem
 
 cd ../1_Plataforma
-rm data.json
+rm -rf data.json
 terraform destroy -auto-approve
 
 ```
