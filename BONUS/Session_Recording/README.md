@@ -6,30 +6,46 @@ This repo make uses of boundary_team_acctest_dev and associated repo. Using that
 * Storage Bucket
 * SSH Target
 * SSH Injected Secret using Boundary Credential Storage
+* Integration with Vault for SSH Secret Injection
+
+The Demo Stack is being modified to just create the resources required for Session Recording
 
 ```bash
 cd BONUS/Session_Recording/boundary-aws-demo-stack
 cp <aws_cred>
 terraform init
 terraform apply -auto-approve
-terraform output -raw instance_ssh_private_key > key.pem && chmod 400 key.pem
 ```
 
-This will create a new Org in our Boundary Cluster with a single target (making use of Dynamic Host)
+The Second step consist in creating the Boundary and Vault configuration, together with the resources (target)
 
-![1690364100426](image/README/1690364100426.png)
+```
+cd ../PKI_Worker
+cp ../../../4_Vault_SSH_Injection/vault_ca.pub .
+terraform apply -auto-approve
+```
 
-We can connect as usual. Once done, if we go to Boundary web UI we can see the recordings in the Global Org
+This will create a new Org in our Boundary Cluster with a single target
 
-![1690364253129](image/README/1690364253129.png)
+
+![1690551980490](image/README/1690551980490.png)We can connect as usual. Once done, if we go to Boundary web UI we can see the recordings in the Global Org
+
+![1690552088638](image/README/1690552088638.png)
+
+
+![1690552190385](image/README/1690552190385.png)
+
 
 ## Clean Up
 
 ```bash
+cd ../boundary-aws-demo-stack
+<cp AWS Creds>
 terraform destroy -auto-approve
-unset AWS_REGION
 unset AWS_ACCESS_KEY_ID
 unset AWS_SECRET_ACCESS_KEY
 unset AWS_SESSION_TOKEN
-rm -rf key.pem
+cd ../PKI_Worker
+<cp AWS Creds>
+terraform destroy -auto-approve
 ```
