@@ -45,7 +45,7 @@ Once we have deployed the infrastructure, we check we can access the instance
 ssh -i cert.pem ubuntu@$(terraform output -json | jq -r .target_publicIP.value)
 ```
 
-And then we proceed to access via Boundary. When we use the Static Credential Store we cannot do "Credential Brokering", but "Credential Injection", which is visible using the Desktop client. To log in with the Desktop client we need Boundary URL and the credentials we defined previously.
+And then we proceed to access via Boundary. When we use the Static Credential Store we cannot do "Credential Injection", but "Credential Brokering", which is visible using the Desktop client. To log in with the Desktop client we need Boundary URL and the credentials we defined previously.
 
 ![Untitled](Boundary%20Demo/Untitled.png)
 
@@ -115,7 +115,7 @@ resource "boundary_credential_library_vault" "analyst" {
 }
 ```
 
-After the deployment we need to "Refresh" the Boundary Desktop Client to obtain the list of new scopes and targets. After this we can check access to the database using the different roles.
+After the deployment we need to "Refresh" the Boundary Desktop Client to obtain the list of new scopes and targets.  Next we can check access to the database using the different roles.
 
 ![1689666736342](image/README/1689666736342.png)
 
@@ -195,6 +195,10 @@ The approach using the Boundary CLI client, remains the same
 ```bash
 boundary connect ssh -target-id=<id>
 ```
+
+With the the newer client and embeded Shell you can connect directly from the Desktop UI
+
+![1705508464311](image/README/1705508464311.png)
 
 ## 5.  Self Managed Worker
 
@@ -443,13 +447,14 @@ In the BONUS/ directory you can find a few more examples around:
 # Step 1
 cd 1_Plataforma/
 terraform init
+# Requires interactive login to HCP to approve cluster creation
 terraform apply -auto-approve
-terraform output -json > data.json
-export BOUNDARY_ADDR=$(cat data.json | jq -r .boundary_public_url.value)
-export VAULT_ADDR=$(cat data.json | jq -r .vault_public_url.value)
+export BOUNDARY_ADDR=$(terraform output -raw boundary_public_url)
+export VAULT_ADDR=$( terraform output -raw vault_public_url)
 export VAULT_NAMESPACE=admin
-export VAULT_TOKEN=$(cat data.json | jq -r .vault_token.value)
-boundary authenticate
+export VAULT_TOKEN=$(terraform output -raw vault_token)
+# Log to boundary interactively using password Auth with admin user
+# boundary authenticate
 export TF_VAR_authmethod=$(boundary auth-methods list -format json | jq -r '.items[0].id')
 
 # Step 2

@@ -56,7 +56,7 @@ Add-ADGroupMember -Identity "Domain Admins" -Members $username
 
 ## Enable LDAPS
 
-To enable LDAPS, you can follow the steps in this tutorial: https://www.youtube.com/watch?v=xC3ujXGkh_c
+To enable LDAPS, you can follow the steps in this tutorial: [https://www.youtube.com/watch?v=xC3ujXGkh_c]()
 
 Basically, you will be installing Windows CA and then rebooting the server.
 
@@ -131,55 +131,43 @@ export CRED_STORE_TOKEN=$(vault token create \
   -period=20m \
   -renewable=true \
   -field=token -format=json | jq -r .)
-
 ```
 
 ## Boundary Configuration
 
-Using this tutorial as reference (https://developer.hashicorp.com/boundary/tutorials/credential-management/hcp-vault-cred-brokering-quickstart) apply the following configuration
+Using this tutorial as reference ([https://developer.hashicorp.com/boundary/tutorials/credential-management/hcp-vault-cred-brokering-quickstart]()) apply the following configuration
 
 ```bash
 export SCOPE_ID=$(boundary scopes create -name ad -format=json | jq -r .item.id)
 export PROJECT_ID=$(boundary scopes create -scope-id $SCOPE_ID -name ad-project -format=json | jq -r .item.id)
-
 export HOST_CATALOG_ID=$(boundary host-catalogs create static -scope-id=$PROJECT_ID -name=ad-catalog -format=json | jq -r .item.id)
-
 export HOST_SET_ID=$(boundary host-sets create static -name=ad-host-set -host-catalog-id=$HOST_CATALOG_ID -format=json  | jq -r .item.id)
-
 export WIN_HOST=$(terraform output -raw targetWindows_publicIP)
-
 export AD_HOST_ID=$(boundary hosts create static \
 -name=ad-host \
 -description="ad host" \
 -address=$WIN_HOST \
 -host-catalog-id=$HOST_CATALOG_ID -format=json | jq -r .item.id)
-
 boundary host-sets add-hosts \
 -id=$HOST_SET_ID \
 -host=$AD_HOST_ID
-
 export TARGET_ID=$(boundary targets create tcp \
   -scope-id $PROJECT_ID \
   -default-port=3389 \
   -session-connection-limit=-1 \
   -name "AD" -format=json | jq -r .item.id)
-
 boundary targets add-host-sources -host-source=$HOST_SET_ID -id=$TARGET_ID
-
 export CRED_STORE_ID=$(boundary credential-stores create vault -scope-id $PROJECT_ID \
   -vault-address $VAULT_ADDR \
   -vault-token $CRED_STORE_TOKEN \
   -vault-namespace $VAULT_NAMESPACE -format=json | jq -r .item.id)
-
 export AD_CRED_LIB_ID=$(boundary credential-libraries create vault \
     -credential-store-id $CRED_STORE_ID \
     -vault-path "ldap/creds/dynamic-role" \
     -name "AD Dynamic Creds" -format=json | jq -r .item.id)
-
 boundary targets add-credential-sources \
   -id=$TARGET_ID \
   -application-credential-source=$AD_CRED_LIB_ID
-
 ```
 
 If we refresh our Boundary Desktop we will see a new org with a new target
