@@ -93,7 +93,8 @@ data "cloudinit_config" "postgres" {
       wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
       sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
       sudo apt-get update
-      sudo apt-get install postgresql postgresql-contrib git postgresql-client-common -y
+      # Installing Postgres version 15
+      sudo apt-get install postgresql-15 postgresql-contrib git postgresql-client-common -y
 
       sudo sed -ibak "s/#listen_addresses\ \=\ 'localhost'/listen_addresses = '*'/g" /etc/postgresql/15/main/postgresql.conf
       sudo sed -ibak 's/127.0.0.1\/32/0.0.0.0\/0/g' /etc/postgresql/15/main/pg_hba.conf
