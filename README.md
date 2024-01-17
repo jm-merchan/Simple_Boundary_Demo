@@ -15,11 +15,10 @@ cd 1_Plataforma/
 terraform init
 # Requires interactive login to HCP to approve cluster creation
 terraform apply -auto-approve
-terraform output -json > data.json
-export BOUNDARY_ADDR=$(cat data.json | jq -r .boundary_public_url.value)
-export VAULT_ADDR=$(cat data.json | jq -r .vault_public_url.value)
+export BOUNDARY_ADDR=$(terraform output -raw boundary_public_url)
+export VAULT_ADDR=$( terraform output -raw vault_public_url)
 export VAULT_NAMESPACE=admin
-export VAULT_TOKEN=$(cat data.json | jq -r .vault_token.value)
+export VAULT_TOKEN=$(terraform output -raw vault_token)
 # Log to boundary interactively using password Auth with admin user
 boundary authenticate
 export TF_VAR_authmethod=$(boundary auth-methods list -format json | jq -r '.items[0].id')
@@ -388,7 +387,7 @@ pod/my-pod created
 Let's verify running pods in test namespace
 
 ```bash
-> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- get pods  -n test    
+> boundary connect kube -target-id ttcp_rQJbOMnBi6 -- get pods  -n test  
 Credentials:
   Credential Source Description: Account for test namespace
   Credential Source ID:          clvlt_OhobkBhNnd
