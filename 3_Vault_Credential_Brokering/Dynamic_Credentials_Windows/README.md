@@ -161,13 +161,13 @@ export CRED_STORE_ID=$(boundary credential-stores create vault -scope-id $PROJEC
   -vault-address $VAULT_ADDR \
   -vault-token $CRED_STORE_TOKEN \
   -vault-namespace $VAULT_NAMESPACE -format=json | jq -r .item.id)
-export AD_CRED_LIB_ID=$(boundary credential-libraries create vault \
+export AD_CRED_LIB_ID=$(boundary credential-libraries create vault-generic \
     -credential-store-id $CRED_STORE_ID \
     -vault-path "ldap/creds/dynamic-role" \
     -name "AD Dynamic Creds" -format=json | jq -r .item.id)
 boundary targets add-credential-sources \
   -id=$TARGET_ID \
-  -application-credential-source=$AD_CRED_LIB_ID
+  -brokered-credential-source=$AD_CRED_LIB_ID
 ```
 
 If we refresh our Boundary Desktop we will see a new org with a new target

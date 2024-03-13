@@ -76,7 +76,7 @@ Here we are making use of a "[Connection helper](https://developer.hashicorp.com
 
 In this step we are going to:
 
-1. Crear an Ubuntu instance where we are going to deployed a Postgres DB and an instance (named `northwind`). This configuration is based on this tutorial: [https://developer.hashicorp.com/boundary/tutorials/credential-management/hcp-vault-cred-brokering-quickstart](https://developer.hashicorp.com/boundary/tutorials/credential-management/hcp-vault-cred-brokering-quickstart). Vault is going to managed the creation of accounts by means of a "Database Secret Engine" connecting via the private endpoint.
+1. Create an Ubuntu instance where we are going to deployed a Postgres DB and an instance (named `northwind`). This configuration is based on this tutorial: [https://developer.hashicorp.com/boundary/tutorials/credential-management/hcp-vault-cred-brokering-quickstart](https://developer.hashicorp.com/boundary/tutorials/credential-management/hcp-vault-cred-brokering-quickstart). Vault is going to managed the creation of accounts by means of a "Database Secret Engine" connecting via the private endpoint.
 2. We are going to install a Windows Server and use Boundary to open a tunnel to access via RDP. Credentials will be stored in Vault using a KV Engine.
 
 Vault configuration will take place thanks to the environmental variables we defined in the first step (`VAULT_ADDR`, `VAULT_NAMESPACE`, `VAULT_TOKEN`)
@@ -89,7 +89,7 @@ terraform init
 # We build first the two EC2 instances
 terraform apply -auto-approve -target=aws_instance.postgres_target -target=aws_instance.windows-server
 # Then the Vault and Boundary configuration
-terraform apply -auto-approve
+bou
 ```
 
 For the db access we have created two different roles in Vault with their correspondent path/endpoints. This translates into two targets for the same host, that are feed by two separate Credential Libraries
@@ -166,6 +166,12 @@ Then simply we initiate a connection towards that "PC"
 ![1689255366658](image/README/1689255366658.png)
 
 > Note: steps to integrate Vault with AD and access via RDP with short-lived accounts are available within the "Dynamic_Credentials_Windows" subdirectory
+
+> Boundary CLI client can also help in reducing the number of steps to get connected to a target. For MacOS devices you can use
+>
+> `boundary connect rdp -target-id=<target-id> -exec bash -- -c "open rdp://full%20address=s={{boundary.addr}} && sleep 6000"`
+>
+> This will launch your local RDP client (I'm using Microsoft Remote Desktop'). The `sleep` command is required to keep the rdp client running.
 
 ## 4.  SSH Certificate Injection
 
