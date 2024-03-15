@@ -2,7 +2,7 @@
 # The global scope can contain multiple org scopes
 resource "boundary_scope" "org" {
   scope_id                 = "global"
-  name                     = "db-org"
+  name                     = "Scenario2_db-scope"
   description              = "DB Team"
   auto_create_default_role = true
   auto_create_admin_role   = true
@@ -13,7 +13,7 @@ Each org can contain multiple projects and projects are used to hold
 infrastructure-related resources
 */
 resource "boundary_scope" "project" {
-  name                     = "db-project"
+  name                     = "Scenario2_db-project"
   description              = "Manage DB Prod Resources"
   scope_id                 = boundary_scope.org.id
   auto_create_admin_role   = true
@@ -68,7 +68,7 @@ resource "boundary_host_set_static" "db" {
 
 resource "boundary_target" "dba" {
   type        = "tcp"
-  name        = "Northwind DBA Database"
+  name        =  "Scenario2_dbAdmin"
   description = "DBA Target"
   #egress_worker_filter     = " \"sm-egress-downstream-worker1\" in \"/tags/type\" "
   #ingress_worker_filter    = " \"sm-ingress-upstream-worker1\" in \"/tags/type\" "
@@ -89,7 +89,7 @@ resource "boundary_target" "dba" {
 
 resource "boundary_target" "analyst" {
   type                     = "tcp"
-  name                     = "Northwind Analyst Database"
+  name                     = "Scenario2_dbAnalyst"
   description              = "Analyst Target"
   scope_id                 = boundary_scope.project.id
   session_connection_limit = -1

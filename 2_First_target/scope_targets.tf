@@ -2,8 +2,8 @@
 # The global scope can contain multiple org scopes
 resource "boundary_scope" "org" {
   scope_id                 = "global"
-  name                     = "ops-org"
-  description              = "Support Ops Team"
+  name                     = "Scenario1_Scope"
+  description              = "Scope for internet facing EC2 instance"
   auto_create_default_role = true
   auto_create_admin_role   = true
 }
@@ -13,27 +13,27 @@ Each org can contain multiple projects and projects are used to hold
 infrastructure-related resources
 */
 resource "boundary_scope" "project" {
-  name                     = "Ops_Production"
-  description              = "Manage Prod Resources"
+  name                     = "Scenario1_Project"
+  description              = "Project Scope"
   scope_id                 = boundary_scope.org.id
   auto_create_admin_role   = true
   auto_create_default_role = true
 }
 
 resource "boundary_host_catalog_static" "aws_instance" {
-  name        = "Simple_Catalog"
-  description = "Simple catalog"
+  name        = "Scenario1_Catalog"
+  description = "Scenario1"
   scope_id    = boundary_scope.project.id
 }
 
 resource "boundary_host_static" "bar" {
-  name            = "aws-private-linux"
+  name            = "Scenario1_Public_Facing_EC2_instance"
   host_catalog_id = boundary_host_catalog_static.aws_instance.id
   address         = aws_instance.boundary_target.public_ip
 }
 
 resource "boundary_host_set_static" "bar" {
-  name            = "aws-private-linux"
+  name            = "Scenario1_Public_Facing_EC2_instance"
   host_catalog_id = boundary_host_catalog_static.aws_instance.id
 
   host_ids = [
@@ -48,8 +48,8 @@ the pki-worker.tf configuration file for the workers.
 */
 resource "boundary_target" "aws_linux_private" {
   type        = "tcp"
-  name        = "aws-private-linux"
-  description = "AWS Linux Private Target"
+  name        = "Scenario1_Public_Facing_EC2_instance"
+  description = "AWS Linux Public Facing Target"
   #egress_worker_filter     = " \"sm-egress-downstream-worker1\" in \"/tags/type\" "
   #ingress_worker_filter    = " \"sm-ingress-upstream-worker1\" in \"/tags/type\" "
   scope_id                 = boundary_scope.project.id

@@ -19,6 +19,18 @@ output "targetWindows_creds_decrypted" {
   value = rsadecrypt(aws_instance.windows-server.password_data, file("../2_First_target/${var.key_pair_name}.pem"))
 }
 
+output "postgres_dbAdmin_connect" {
+  value = "boundary connect postgres -target-id ${boundary_target.dba.id} -dbname northwind"
+}
+
+output "postgres_dbAnalyst_connect" {
+  value = "boundary connect postgres -target-id ${boundary_target.analyst.id} -dbname northwind"
+}
+
+output "rds_connect" {
+  value = "boundary connect rdp -target-id=${boundary_target.win_rdp.id} -exec bash -- -c \"open rdp://full%20address=s={{boundary.addr}} && sleep 6000\""
+}
+
 /*
 output "targetWindows_creds" {
   value = aws_instance.windows-server.password_data

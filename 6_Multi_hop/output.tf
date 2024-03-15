@@ -13,3 +13,11 @@ output "internal-windows-target_privateIP" {
 output "targetWindows_creds_decrypted" {
   value = rsadecrypt(aws_instance.windows-server.password_data, file("../2_First_target/${var.key_pair_name}.pem"))
 }
+
+output "ssh_connect" {
+  value = "boundary connect ssh -target-id ${boundary_target.ssh.id}"
+}
+
+output "rdp_connect" {
+  value = "boundary connect rdp -target-id=${boundary_target.win.id} -exec bash -- -c \"open rdp://full%20address=s={{boundary.addr}} && sleep 6000\""
+}

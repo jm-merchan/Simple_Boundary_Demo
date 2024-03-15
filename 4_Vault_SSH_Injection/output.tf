@@ -7,3 +7,6 @@ output "target_privateIP" {
   value = aws_instance.ssh_injection_target.private_ip
 }
 
+output "ssh_connect" {
+  value = "boundary connect ssh -target-id=${boundary_target.ssh.id}"
+}

@@ -2,7 +2,7 @@
 # The global scope can contain multiple org scopes
 resource "boundary_scope" "org" {
   scope_id                 = "global"
-  name                     = "ssh-private-multi-org"
+  name                     = "Scenario5_ssh-private-multi-org"
   description              = "SSH Team"
   auto_create_default_role = true
   auto_create_admin_role   = true
@@ -13,7 +13,7 @@ Each org can contain multiple projects and projects are used to hold
 infrastructure-related resources
 */
 resource "boundary_scope" "project" {
-  name                     = "ssh-private-multi-project"
+  name                     = "Scenario5_ssh-private-multi-project"
   description              = "SSH test machines"
   scope_id                 = boundary_scope.org.id
   auto_create_admin_role   = true
@@ -90,7 +90,7 @@ resource "boundary_host_set_static" "ssh" {
 
 resource "boundary_target" "ssh" {
   type                     = "ssh"
-  name                     = "ssh-target-private-multi"
+  name                     = "Scenario5_ssh-target-private-multi"
   description              = "ssh-target"
   egress_worker_filter     = " \"worker-multi\" in \"/tags/type\" "
   ingress_worker_filter    = " \"worker1\" in \"/tags/type\" "

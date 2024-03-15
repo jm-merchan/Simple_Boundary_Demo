@@ -1,4 +1,4 @@
-# Steps to Create Dynamic Windows Users
+# [Scenario 2b] Steps to Create Dynamic Windows Users
 
 As a bonus of the previous step we are going to convert our Windows Server instance into a Domain Controller and enable the LDAP Secret Engine to create dynamic credentials. Some of the steps outlined here are manual
 
@@ -138,8 +138,8 @@ export CRED_STORE_TOKEN=$(vault token create \
 Using this tutorial as reference ([https://developer.hashicorp.com/boundary/tutorials/credential-management/hcp-vault-cred-brokering-quickstart]()) apply the following configuration
 
 ```bash
-export SCOPE_ID=$(boundary scopes create -name ad -format=json | jq -r .item.id)
-export PROJECT_ID=$(boundary scopes create -scope-id $SCOPE_ID -name ad-project -format=json | jq -r .item.id)
+export SCOPE_ID=$(boundary scopes create -name Scenario2b_ad -format=json | jq -r .item.id)
+export PROJECT_ID=$(boundary scopes create -scope-id $SCOPE_ID -name Scenario2b_ad-project -format=json | jq -r .item.id)
 export HOST_CATALOG_ID=$(boundary host-catalogs create static -scope-id=$PROJECT_ID -name=ad-catalog -format=json | jq -r .item.id)
 export HOST_SET_ID=$(boundary host-sets create static -name=ad-host-set -host-catalog-id=$HOST_CATALOG_ID -format=json  | jq -r .item.id)
 export WIN_HOST=$(terraform output -raw targetWindows_publicIP)
@@ -155,7 +155,7 @@ export TARGET_ID=$(boundary targets create tcp \
   -scope-id $PROJECT_ID \
   -default-port=3389 \
   -session-connection-limit=-1 \
-  -name "AD" -format=json | jq -r .item.id)
+  -name "Scenario2b_AD" -format=json | jq -r .item.id)
 boundary targets add-host-sources -host-source=$HOST_SET_ID -id=$TARGET_ID
 export CRED_STORE_ID=$(boundary credential-stores create vault -scope-id $PROJECT_ID \
   -vault-address $VAULT_ADDR \
@@ -188,7 +188,15 @@ After login we can check the id of the user.
 
 ![1689856671543](image/README/1689856671543.png)
 
-To clean up
+Or via CLI
+
+```bash
+boundary connect rdp -target-id=$TARGET_ID -exec bash -- -c "open rdp://full%20address=s={{boundary.addr}} && sleep 6000"
+```
+
+![1710336024320](image/README/1710336024320.png)
+
+## Clean up
 
 ```bash
 boundary scopes delete -id=$SCOPE_ID

@@ -10,6 +10,9 @@ output "internal-target_privateIP" {
   value = aws_instance.internal_target.private_ip
 }
 
+output "connect_ssh" {
+  value = "boundary connect ssh -target-id ${boundary_target.ssh.id}"
+}
 
 /*
 output "targetWindows_creds" {

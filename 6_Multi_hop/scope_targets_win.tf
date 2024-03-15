@@ -2,7 +2,7 @@
 # The global scope can contain multiple org scopes
 resource "boundary_scope" "org_w" {
   scope_id                 = "global"
-  name                     = "win-private-multi-org"
+  name                     = "Scenario5_win-private-multi-org"
   description              = "Win Team"
   auto_create_default_role = true
   auto_create_admin_role   = true
@@ -13,7 +13,7 @@ Each org can contain multiple projects and projects are used to hold
 infrastructure-related resources
 */
 resource "boundary_scope" "project_w" {
-  name                     = "win-private-multi-project"
+  name                     = "Scenario5_win-private-multi-project"
   description              = "win test machines"
   scope_id                 = boundary_scope.org_w.id
   auto_create_admin_role   = true
@@ -60,7 +60,7 @@ resource "boundary_credential_username_password" "example" {
 
 resource "boundary_target" "win" {
   type                     = "tcp"
-  name                     = "win-rdp-target-private-multi"
+  name                     = "Scenario5_win-rdp-target-private-multi"
   description              = "win-rdp- target"
   egress_worker_filter     = " \"worker-multi\" in \"/tags/type\" "
   ingress_worker_filter    = " \"true\" in \"/tags/boundary.cloud.hashicorp.com:managed\" "
@@ -81,7 +81,7 @@ resource "boundary_target" "win" {
 
 resource "boundary_target" "win_http" {
   type                 = "tcp"
-  name                 = "win-http-target-private-multi"
+  name                 = "Scenario5_win-http-target-private-multi"
   description          = "win-http-target"
   egress_worker_filter = " \"worker-multi\" in \"/tags/type\" "
   # ingress_worker_filter    = " \"true\" in \"/tags/boundary.cloud.hashicorp.com:managed\" "

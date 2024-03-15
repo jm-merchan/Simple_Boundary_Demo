@@ -2,7 +2,7 @@
 # The global scope can contain multiple org scopes
 resource "boundary_scope" "org_w" {
   scope_id                 = "global"
-  name                     = "Windows-org"
+  name                     = "Scenario2_Windows-scope"
   description              = "Windows Team"
   auto_create_default_role = true
   auto_create_admin_role   = true
@@ -13,7 +13,7 @@ Each org can contain multiple projects and projects are used to hold
 infrastructure-related resources
 */
 resource "boundary_scope" "project_w" {
-  name                     = "Windows project"
+  name                     = "Scenario2_Windows-project"
   description              = "Manage Windows Prod Resources"
   scope_id                 = boundary_scope.org_w.id
   auto_create_admin_role   = true
@@ -60,7 +60,7 @@ resource "boundary_host_set_static" "win" {
 
 resource "boundary_target" "win_rdp" {
   type                     = "tcp"
-  name                     = "Windows RDP"
+  name                     = "Scenario2_Windows-RDP"
   description              = "RDP Target"
   scope_id                 = boundary_scope.project_w.id
   session_connection_limit = -1
@@ -77,7 +77,7 @@ resource "boundary_target" "win_rdp" {
 
 resource "boundary_target" "win_http" {
   type                     = "tcp"
-  name                     = "Windows HTTP"
+  name                     = "Scenario2_Windows-HTTP"
   description              = "HTTP Target"
   scope_id                 = boundary_scope.project_w.id
   session_connection_limit = -1
