@@ -2,8 +2,8 @@ terraform {
   required_providers {
 
     boundary = {
-      source  = "hashicorp/boundary"
-      version = "1.1.9"
+      source = "hashicorp/boundary"
+      version = "1.1.14"
     }
     aws = {
       source  = "hashicorp/aws"

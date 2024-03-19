@@ -138,7 +138,7 @@ export CRED_STORE_TOKEN=$(vault token create \
 Using this tutorial as reference ([https://developer.hashicorp.com/boundary/tutorials/credential-management/hcp-vault-cred-brokering-quickstart]()) apply the following configuration
 
 ```bash
-export SCOPE_ID=$(boundary scopes create -name Scenario2b_ad -format=json | jq -r .item.id)
+export SCOPE_ID=$(terraform output -raw demo_scope)
 export PROJECT_ID=$(boundary scopes create -scope-id $SCOPE_ID -name Scenario2b_ad-project -format=json | jq -r .item.id)
 export HOST_CATALOG_ID=$(boundary host-catalogs create static -scope-id=$PROJECT_ID -name=ad-catalog -format=json | jq -r .item.id)
 export HOST_SET_ID=$(boundary host-sets create static -name=ad-host-set -host-catalog-id=$HOST_CATALOG_ID -format=json  | jq -r .item.id)

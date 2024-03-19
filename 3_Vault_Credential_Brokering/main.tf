@@ -3,7 +3,7 @@ terraform {
 
     boundary = {
       source  = "hashicorp/boundary"
-      version = "1.1.8"
+      version = "1.1.14"
     }
     aws = {
       source  = "hashicorp/aws"

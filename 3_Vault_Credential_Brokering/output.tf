@@ -27,16 +27,12 @@ output "postgres_dbAnalyst_connect" {
   value = "boundary connect postgres -target-id ${boundary_target.analyst.id} -dbname northwind"
 }
 
-output "rds_connect" {
+output "rdp_connect" {
   value = "boundary connect rdp -target-id=${boundary_target.win_rdp.id} -exec bash -- -c \"open rdp://full%20address=s={{boundary.addr}} && sleep 6000\""
 }
 
-/*
-output "targetWindows_creds" {
-  value = aws_instance.windows-server.password_data
+
+output "demo_scope" {
+  value = data.boundary_scope.org.id
 }
 
-output "boundary_token" {
-  value = nonsensitive(vault_token.boundary_token.client_token)
-}
-*/

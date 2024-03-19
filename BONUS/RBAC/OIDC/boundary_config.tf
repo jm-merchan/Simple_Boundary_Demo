@@ -1,24 +1,13 @@
-# Create an organisation scope within global, named "ops-org"
-# The global scope can contain multiple org scopes
-resource "boundary_scope" "org" {
-  scope_id                 = "global"
-  name                     = "OIDC-org"
-  description              = "Support OIDC Creds "
-  auto_create_default_role = true
-  auto_create_admin_role   = true
+data "boundary_scope" "org" {
+  name     = "Demo"
+  scope_id = "global"
 }
 
-/* Create a project scope within the "ops-org" organsation
-Each org can contain multiple projects and projects are used to hold
-infrastructure-related resources
-*/
-resource "boundary_scope" "project" {
-  name                     = "Ops_Production"
-  description              = "Manage Prod Resources"
-  scope_id                 = boundary_scope.org.id
-  auto_create_admin_role   = true
-  auto_create_default_role = true
+data "boundary_scope" "Scenario1_Project" {
+  name     = "Scenario1_Project"
+  scope_id = data.boundary_scope.org.id
 }
+
 
 # An Auth0 Client loaded using its ID.
 data "auth0_client" "boundary" {
@@ -30,9 +19,9 @@ data "auth0_tenant" "tenant" {}
 resource "boundary_auth_method_oidc" "provider" {
   name                 = "Auth0"
   description          = "OIDC auth method for Auth0"
-  scope_id             = boundary_scope.org.id
+  scope_id             = data.boundary_scope.org.id
   issuer               = "https://${data.auth0_tenant.tenant.domain}/"
-  client_id            = auth0_client.boundary.client_id
+  client_id            = data.auth0_client.boundary.id
   client_secret        = data.auth0_client.boundary.client_secret
   signing_algorithms   = ["RS256"]
   api_url_prefix       = data.terraform_remote_state.local_backend.outputs.boundary_public_url
@@ -41,89 +30,227 @@ resource "boundary_auth_method_oidc" "provider" {
   max_age              = 0
 }
 
-resource "boundary_managed_group" "oidc_group" {
-  name           = "Auth0"
-  description    = "OIDC managed group for Auth0"
+# Configs for Admin User
+# ---------------------------
+# ---------------------------
+resource "boundary_account_oidc" "admin" {
+  name           = auth0_user.admin.name
+  description    = "Admin user from Auth0"
   auth_method_id = boundary_auth_method_oidc.provider.id
-  filter         = "\"auth0\" in \"/userinfo/sub\""
+  issuer         = "https://${data.auth0_tenant.tenant.domain}/"
+  subject        = auth0_user.admin.user_id
 }
 
+resource "boundary_user" "admin" {
+  name        = boundary_account_oidc.admin.name
+  description = "Admin user from Auth0"
+  account_ids = [boundary_account_oidc.admin.id]
+  scope_id    = data.boundary_scope.org.id
+}
 
-resource "boundary_account_oidc" "oidc_user" {
-  for_each       = auth0_user.user
-  name           = each.value.name
-  description    = "OIDC account for ${each.value.name}"
+resource "boundary_role" "admin_project" {
+  # All Permissions for Admin at Project Scope
+  name          = "admin-project"
+  description   = "Full Admin Permisions at Project level"
+  principal_ids = [boundary_user.admin.id]
+  grant_strings = ["ids=*;type=*;actions=*"]
+  scope_id      = data.boundary_scope.Scenario1_Project.id
+}
+
+resource "boundary_role" "admin_org" {
+  name          = "admin-org"
+  description   = "Full Admin Permissions at Org level"
+  principal_ids = [boundary_user.admin.id]
+  grant_strings = ["ids=*;type=*;actions=*"]
+  scope_id      = data.boundary_scope.org.id
+}
+
+resource "boundary_role" "admin_global" {
+  name          = "admin-org"
+  description   = "Full Admin Permissions at Global level"
+  principal_ids = [boundary_user.admin.id]
+  grant_strings = ["ids=*;type=*;actions=*"]
+  scope_id      = "global"
+}
+
+# ---------------------------
+# ---------------------------
+
+
+# Configs for Linux User
+resource "boundary_account_oidc" "linux" {
+  name           = auth0_user.linux.name
+  description    = "Linux user from Auth0"
   auth_method_id = boundary_auth_method_oidc.provider.id
-  issuer         = "https://${data.auth0_tenant.tenant.domain}/" 
-  subject        = each.value.user_id
+  issuer         = "https://${data.auth0_tenant.tenant.domain}/"
+  subject        = auth0_user.linux.user_id
 }
 
-resource "boundary_user" "users" {
-  for_each    = boundary_account_oidc.oidc_user
-  name        = each.value.name
-  description = "${each.value.name} user resource"
-  account_ids = [each.value.id]
-  scope_id    = boundary_scope.org.id
+resource "boundary_user" "linux" {
+  name        = boundary_account_oidc.linux.name
+  description = "Linux user from Auth0"
+  account_ids = [boundary_account_oidc.linux.id]
+  scope_id    = data.boundary_scope.org.id
 }
 
-resource "boundary_role" "admin" {
-  name        = "scope-admin"
-  description = "Scope Admin role"
-  principal_ids = tolist([
-    for user in boundary_user.users : user.id
-  ])
-  grant_strings = ["id=*;type=*;actions=*"]
-  scope_id      = boundary_scope.org.id
-}
-
-resource "boundary_role" "oidc_role" {
-  name          = "List and Read"
-  description   = "List and read role"
-  principal_ids = [boundary_managed_group.oidc_group.id]
-  grant_strings = ["id=*;type=role;actions=list,read"]
-  scope_id      = boundary_scope.org.id
-}
-
-
-resource "boundary_host_catalog_static" "aws_instance" {
-  name        = "Simple_Catalog"
-  description = "Simple catalog"
-  scope_id    = boundary_scope.project.id
-}
-/*
-
-resource "boundary_host_static" "bar" {
-  name            = "aws-private-linux"
-  host_catalog_id = boundary_host_catalog_static.aws_instance.id
-  address         = aws_instance.boundary_target.public_ip
-}
-
-resource "boundary_host_set_static" "bar" {
-  name            = "aws-private-linux"
-  host_catalog_id = boundary_host_catalog_static.aws_instance.id
-
-  host_ids = [
-    boundary_host_static.bar.id
+resource "boundary_role" "linux1" {
+  # Permissions limited to linux target
+  name          = "linux1"
+  description   = "Access to linux target"
+  principal_ids = [boundary_user.linux.id]
+  grant_strings = [
+    "ids=tssh_RzIyHiXb2i;actions=authorize-session",
+    "ids=*;type=session;actions=read:self,cancel:self,list",
+    "ids=*;type=*;actions=read,list"
   ]
+  scope_id = "p_u7vJrHg8oV"
+}
+resource "boundary_role" "linux2" {
+  # Permissions limited to linux target
+  name          = "linux2"
+  description   = "Access to linux target"
+  principal_ids = [boundary_user.linux.id]
+  grant_strings = [
+    "ids=tssh_NfmRQgYys8;actions=authorize-session",
+    "ids=*;type=session;actions=read:self,cancel:self,list",
+    "ids=*;type=*;actions=read,list"
+  ]
+  scope_id = "p_30r9T1my8B"
 }
 
-resource "boundary_target" "aws_linux_private" {
-  type        = "tcp"
-  name        = "aws-private-linux"
-  description = "AWS Linux Private Target"
-  #egress_worker_filter     = " \"sm-egress-downstream-worker1\" in \"/tags/type\" "
-  #ingress_worker_filter    = " \"sm-ingress-upstream-worker1\" in \"/tags/type\" "
-  scope_id                 = boundary_scope.project.id
-  session_connection_limit = -1
-  default_port             = 22
-  host_source_ids = [
-    boundary_host_set_static.bar.id
-  ]
+resource "boundary_role" "linux3" {
+  # Permissions limited to linux target
+  name          = "linux3"
+  description   = "Access to linux target"
+  principal_ids = [boundary_user.linux.id]
+  grant_strings = [
+    "ids=tssh_BHIFfbIMN4;actions=authorize-session",
 
-  # Comment this to avoid brokeing the credentials
-  brokered_credential_source_ids = [
-    boundary_credential_ssh_private_key.example.id
+    "ids=ttcp_8pQ6xdSlBd;actions=authorize-session",
+    "ids=*;type=session;actions=read:self,cancel:self,list",
+    "ids=*;type=*;actions=read,list"
   ]
-
+  scope_id = "p_QxjAlbYh2o"
 }
-*/
+
+# ---------------------------
+# ---------------------------
+
+
+# Configs for Linux User
+resource "boundary_account_oidc" "http_db" {
+  name           = auth0_user.http_db.name
+  description    = "HTTP_DB user from Auth0"
+  auth_method_id = boundary_auth_method_oidc.provider.id
+  issuer         = "https://${data.auth0_tenant.tenant.domain}/"
+  subject        = auth0_user.http_db.user_id
+}
+
+resource "boundary_user" "http_db" {
+  name        = boundary_account_oidc.http_db.name
+  description = "http_db user from Auth0"
+  account_ids = [boundary_account_oidc.http_db.id]
+  scope_id    = data.boundary_scope.org.id
+}
+
+resource "boundary_role" "http_db1" {
+  name          = "http_db1"
+  description   = "Access to http or db target"
+  principal_ids = [boundary_user.http_db.id]
+  grant_strings = [
+    "ids=ttcp_lC1yUnQ37z;actions=authorize-session",
+    "ids=*;type=session;actions=read:self,cancel:self,list",
+    "ids=*;type=*;actions=read,list"
+  ]
+  scope_id = "p_SFcJ8NY7j1"
+}
+resource "boundary_role" "http_db2" {
+  name          = "http_db1"
+  description   = "Access to http or db target"
+  principal_ids = [boundary_user.http_db.id]
+  grant_strings = [
+    "ids=ttcp_k4CHRZgE5e;actions=authorize-session",
+    "ids=*;type=session;actions=read:self,cancel:self,list",
+    "ids=*;type=*;actions=read,list"
+  ]
+  scope_id = "p_PfddOdWdDk"
+}
+
+resource "boundary_role" "http_db3" {
+  name          = "http_db3"
+  description   = "Access to http or db target"
+  principal_ids = [boundary_user.http_db.id]
+  grant_strings = [
+    "ids=ttcp_WdcTq2mWV8;actions=authorize-session",
+    "ids=*;type=session;actions=read:self,cancel:self,list",
+    "ids=*;type=*;actions=read,list"
+  ]
+  scope_id = "p_qFH6KQpIEI"
+}
+
+resource "boundary_role" "http_db4" {
+  name          = "http_db4"
+  description   = "Access to http or db target"
+  principal_ids = [boundary_user.http_db.id]
+  grant_strings = [
+    "ids=ttcp_eZVifgDzph;actions=authorize-session",
+    "ids=*;type=session;actions=read:self,cancel:self,list",
+    "ids=*;type=*;actions=read,list"
+  ]
+  scope_id = "p_qFH6KQpIEI"
+}
+
+# ---------------------------
+# ---------------------------
+
+
+# Configs for Windows
+resource "boundary_account_oidc" "windows" {
+  name           = auth0_user.windows.name
+  description    = "windows user from Auth0"
+  auth_method_id = boundary_auth_method_oidc.provider.id
+  issuer         = "https://${data.auth0_tenant.tenant.domain}/"
+  subject        = auth0_user.windows.user_id
+}
+
+resource "boundary_user" "windows" {
+  name        = boundary_account_oidc.windows.name
+  description = "windows user from Auth0"
+  account_ids = [boundary_account_oidc.windows.id]
+  scope_id    = data.boundary_scope.org.id
+}
+
+resource "boundary_role" "windows1" {
+  name          = "windows1"
+  description   = "Access to rdp target"
+  principal_ids = [boundary_user.windows.id]
+  grant_strings = [
+    "ids=ttcp_QIepyl78ko;actions=authorize-session",
+    "ids=*;type=session;actions=read:self,cancel:self,list",
+    "ids=*;type=*;actions=read,list"
+  ]
+  scope_id = "p_SFcJ8NY7j1"
+}
+resource "boundary_role" "windows2" {
+  name          = "windows2"
+  description   = "Access to rdp target"
+  principal_ids = [boundary_user.windows.id]
+  grant_strings = [
+    "ids=ttcp_PY0Awvbvfb;actions=authorize-session",
+    "ids=*;type=session;actions=read:self,cancel:self,list",
+    "ids=*;type=*;actions=read,list"
+  ]
+  scope_id = "p_PfddOdWdDk"
+}
+
+resource "boundary_role" "windows3" {
+  name          = "windows_ad"
+  description   = "Access to rdp target"
+  principal_ids = [boundary_user.windows.id]
+  grant_strings = [
+    "ids=ttcp_Gu5acMVmjP;actions=authorize-session",
+    "ids=*;type=session;actions=read:self,cancel:self,list",
+    "ids=*;type=*;actions=read,list"
+  ]
+  scope_id = "p_ALJOzimtaM"
+}

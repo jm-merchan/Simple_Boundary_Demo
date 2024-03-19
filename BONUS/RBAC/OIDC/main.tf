@@ -6,7 +6,7 @@ terraform {
     }
     boundary = {
       source  = "hashicorp/boundary"
-      version = "1.1.9"
+      version = "1.1.14"
     }
     hcp = {
       source  = "hashicorp/hcp"

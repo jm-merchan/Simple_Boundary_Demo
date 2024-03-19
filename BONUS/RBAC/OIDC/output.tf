@@ -1,15 +1,3 @@
-/*
-output "target_publicIP" {
-  value = aws_instance.boundary_target.public_ip
-}
-*/
-
-output "usernames" {
-  value = toset([
-    for user in auth0_user.user : "${user.name}@boundaryproject.io"
-  ])
-}
-
 output "password" {
   value = var.auth0_password
 }
@@ -18,10 +6,20 @@ output "auth_method_id" {
   value = boundary_auth_method_oidc.provider.id
 }
 
-output "managed-group-id" {
-  value = boundary_managed_group.oidc_group.id
+output "boundary_authenticate_cli" {
+  value = "boundary authenticate oidc -auth-method-id ${boundary_auth_method_oidc.provider.id}"
 }
 
-output "role-id" {
-  value = boundary_role.oidc_role.id
+
+output "linux" {
+  value = auth0_user.linux.email
+}
+
+
+output "windows" {
+  value = auth0_user.windows.email
+}
+
+output "http_db" {
+  value = auth0_user.http_db.email
 }

@@ -1,11 +1,6 @@
-# Create an organisation scope within global, named "ops-org"
-# The global scope can contain multiple org scopes
-resource "boundary_scope" "org_w" {
-  scope_id                 = "global"
-  name                     = "Scenario5_win-private-multi-org"
-  description              = "Win Team"
-  auto_create_default_role = true
-  auto_create_admin_role   = true
+data "boundary_scope" "org" {
+  name     = "Demo"
+  scope_id = "global"
 }
 
 /* Create a project scope within the "ops-org" organsation
@@ -15,7 +10,7 @@ infrastructure-related resources
 resource "boundary_scope" "project_w" {
   name                     = "Scenario5_win-private-multi-project"
   description              = "win test machines"
-  scope_id                 = boundary_scope.org_w.id
+  scope_id                 = data.boundary_scope.org.id
   auto_create_admin_role   = true
   auto_create_default_role = true
 }

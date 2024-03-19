@@ -2,8 +2,7 @@
 # The global scope can contain multiple org scopes
 resource "boundary_scope" "org" {
   scope_id                 = "global"
-  name                     = "Scenario1_Scope"
-  description              = "Scope for internet facing EC2 instance"
+  name                     = "Demo"
   auto_create_default_role = true
   auto_create_admin_role   = true
 }

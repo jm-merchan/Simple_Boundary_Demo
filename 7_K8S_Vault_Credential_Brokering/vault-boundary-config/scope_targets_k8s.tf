@@ -1,17 +1,12 @@
-# Create an organisation scope within global, named "ops-org"
-# The global scope can contain multiple org scopes
-resource "boundary_scope" "org" {
-  scope_id                 = "global"
-  name                     = "k8s-org"
-  description              = "K8s Team"
-  auto_create_default_role = true
-  auto_create_admin_role   = true
+data "boundary_scope" "org" {
+  name     = "Demo"
+  scope_id = "global"
 }
 
 resource "boundary_scope" "project" {
-  name                     = "k8s-project"
+  name                     = "Scenario6_k8s-project"
   description              = "Manage k8s Resources"
-  scope_id                 = boundary_scope.org.id
+  scope_id                 = data.boundary_scope.org.id
   auto_create_admin_role   = true
   auto_create_default_role = true
 }
@@ -71,7 +66,7 @@ resource "boundary_host_set_static" "k8s" {
 
 resource "boundary_target" "k8s" {
   type        = "tcp"
-  name        = "EKS Cluster"
+  name        = "Scenario6_EKSCluster"
   description = "Access to test namespace"
 
   scope_id                 = boundary_scope.project.id
