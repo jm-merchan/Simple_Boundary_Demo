@@ -4,27 +4,13 @@ This repo make uses of boundary_team_acctest_dev and associated repo. Using that
 
 * PKI Worker
 * Storage Bucket
+* S3 and IAM policies
 * SSH Target
 * SSH Injected Secret using Boundary Credential Storage
 * Integration with Vault for SSH Secret Injection
 
-The Demo Stack is being modified to just create the resources required for Session Recording
-
-```bash
-cd BONUS/Session_Recording/boundary-aws-demo-stack
-cp <aws_cred>
-terraform init
-terraform apply -auto-approve
 ```
-
-The Second step consist in creating the Boundary and Vault configuration, together with the resources (target)
-
-```
-unset AWS_ACCESS_KEY_ID
-unset AWS_SECRET_ACCESS_KEY
-unset AWS_SESSION_TOKEN
-cp <aws_creds_your_tenant>
-cd ../PKI_Worker
+cd BONUS/Session_Recording/PKI_Worker
 cp ../../../4_Vault_SSH_Injection/vault_ca.pub .
 terraform apply -auto-approve
 ```
@@ -40,13 +26,5 @@ This will create a new Org in our Boundary Cluster with a single target
 ## Clean Up
 
 ```bash
-cd ../boundary-aws-demo-stack
-<cp AWS Creds>
-terraform destroy -auto-approve
-unset AWS_ACCESS_KEY_ID
-unset AWS_SECRET_ACCESS_KEY
-unset AWS_SESSION_TOKEN
-cd ../PKI_Worker
-<cp AWS Creds>
 terraform destroy -auto-approve
 ```
