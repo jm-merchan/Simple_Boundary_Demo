@@ -2,12 +2,12 @@ terraform {
   required_providers {
 
     boundary = {
-      source = "hashicorp/boundary"
+      source  = "hashicorp/boundary"
       version = "1.1.14"
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "5.7.0"
+      version = "~>5.11.0"
     }
 
     vault = {
@@ -18,6 +18,10 @@ terraform {
     cloudinit = {
       source  = "hashicorp/cloudinit"
       version = "2.3.2"
+    }
+    time = {
+      source  = "hashicorp/time"
+      version = "~>0.9.1"
     }
   }
 }
@@ -48,14 +52,5 @@ data "terraform_remote_state" "local_backend" {
 
   config = {
     path = "../../../1_Plataforma/terraform.tfstate"
-  }
-}
-
-# Remote Backend to obtain Credential Details to S3 
-data "terraform_remote_state" "local_backend_recording" {
-  backend = "local"
-
-  config = {
-    path = "../boundary-aws-demo-stack/terraform.tfstate"
   }
 }

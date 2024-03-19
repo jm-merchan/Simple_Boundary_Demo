@@ -48,21 +48,97 @@ resource "time_sleep" "boundary_ready2" {
   depends_on = [boundary_storage_bucket.aws_example]
 }
 
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_policy" "demo_user_permissions_boundary" {
+  name = "DemoUser"
+}
+
+locals {
+  my_email = split("/", data.aws_caller_identity.current.arn)[2]
+}
+
+# Create the user to be used in Boundary for session recording. Then attach the policy to the user.
+resource "aws_iam_user" "boundary_session_recording" {
+  name                 = "demo-${local.my_email}-bsr"
+  permissions_boundary = data.aws_iam_policy.demo_user_permissions_boundary.arn
+  force_destroy        = true
+  tags                 = var.common_tags
+}
+
+resource "aws_iam_user_policy_attachment" "boundary_session_recording" {
+  user       = aws_iam_user.boundary_session_recording.name
+  policy_arn = data.aws_iam_policy.demo_user_permissions_boundary.arn
+}
+
+data "aws_iam_policy_document" "boundary_user_policy" {
+  statement {
+    sid = "InteractWithS3"
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:GetObjectAttributes",
+    ]
+    resources = ["arn:aws:s3:::${aws_s3_bucket.storage_bucket.arn}/*"]
+  }
+  statement {
+    actions = [
+      "iam:DeleteAccessKey",
+      "iam:GetUser",
+      "iam:CreateAccessKey"
+    ]
+    resources = [aws_iam_user.boundary_session_recording.arn]
+  }
+}
+
+resource "aws_iam_policy" "boundary_user_policy" {
+  name        = "demo-${local.my_email}-bsr-policy"
+  path        = "/"
+  description = "Managed policy for the Boundary user recorder"
+  policy      = data.aws_iam_policy_document.boundary_user_policy.json
+  tags        = var.common_tags
+}
+
+
+resource "aws_iam_user_policy_attachment" "boundary_user_policy" {
+  user       = aws_iam_user.boundary_session_recording.name
+  policy_arn = aws_iam_policy.boundary_user_policy.arn
+}
+
+# Generate some secrets to pass in to the Boundary configuration.
+# WARNING: These secrets are not encrypted in the state file. Ensure that you do not commit your state file!
+resource "aws_iam_access_key" "boundary_session_recording" {
+  user       = aws_iam_user.boundary_session_recording.name
+  depends_on = [aws_iam_user_policy_attachment.boundary_session_recording]
+}
+
+# AWS is eventually-consistent when creating IAM Users. Introduce a wait
+# before handing credentails off to boundary.
+resource "time_sleep" "boundary_session_recording_user_ready" {
+  create_duration = "10s"
+
+  depends_on = [aws_iam_access_key.boundary_session_recording]
+}
+
+# NOTE:  Be advised, at this time there is no way to delete a storage bucket with the provider or inside of Boundary GUI
+# The only way to delete the storage bucket is to delete the cluster at the moment.  As such, you could leverage the below
+# to provision a storage bucket with this demo, or you can manage this in your Boundary Cluster Configuration
+
 resource "boundary_storage_bucket" "aws_example" {
   name        = "Storage Bucket"
   description = "My first storage bucket!"
   scope_id    = "global"
   plugin_name = "aws"
-  bucket_name = data.terraform_remote_state.local_backend_recording.outputs.bucket_name
+  bucket_name = aws_s3_bucket.storage_bucket.id
   attributes_json = jsonencode({
-    "region" = "us-east-1",
+  "region" = "${var.region}",
   "disable_credential_rotation" : true })
 
   # recommended to pass in aws secrets using a file() or using environment variables
   # the secrets below must be generated in aws by creating a aws iam user with programmatic access
   secrets_json = jsonencode({
-    "access_key_id"     = data.terraform_remote_state.local_backend_recording.outputs.storage_user_access_key_id
-    "secret_access_key" = data.terraform_remote_state.local_backend_recording.outputs.storage_user_secret_access_key
+    "access_key_id"     = aws_iam_access_key.boundary_session_recording.id,
+    "secret_access_key" = aws_iam_access_key.boundary_session_recording.secret
   })
   worker_filter = " \"worker_ssh\" in \"/tags/type\" "
 
