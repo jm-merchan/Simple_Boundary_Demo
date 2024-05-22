@@ -214,8 +214,10 @@ The approach using the Boundary CLI client, remains the same
 
 ```bash
 boundary connect ssh -target-id=<id>
-# Or using eval to get that command from terraform output
+# Using eval to get that command from terraform output
 eval "$(terraform output -raw ssh_connect)" 
+# Using eval with alias
+eval $(terraform output -raw ssh_connect_alias)
 ```
 
 With the the newer client and embeded Shell you can connect directly from the Desktop UI
@@ -313,10 +315,20 @@ Then we are going to create a service account for  Vault. The service account wi
 cd ../vault-boundary-config
 kubectl create ns vault
 kubectl create sa vault -n vault
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vault
+  namespace: vault
+  annotations:
+    kubernetes.io/service-account.name: vault
+type: kubernetes.io/service-account-token
+EOF
 kubectl create ns test
 kubectl apply -f .
-kubectl get secret -n vault $(kubectl get sa vault -n vault -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 --decode > token.txt
-kubectl get secret -n vault $(kubectl get sa vault -n vault -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.ca\.crt}' | base64 --decode > ca.crt
+kubectl get secret -n vault vault -o jsonpath='{.data.token}' | base64 --decode > token.txt
+kubectl get secret -n vault vault -o jsonpath='{.data.ca\.crt}' | base64 --decode > ca.crt
 terraform init
 terraform apply -auto-approve
 ```
@@ -332,8 +344,8 @@ After clicking in connect, we get a tunnel open towards the EKS target with the 
 In a separate terminal we have to run the following
 
 ```bash
-export PORT=59826 # port above
-export REMOTE_USER_TOKEN=<service_account_token>
+export PORT=<port> # port above
+export REMOTE_USER_TOKEN=<service_account_token> #service_account_token
 ```
 
 After this we can get access to the EKS cluster
@@ -518,10 +530,20 @@ aws eks --region $(terraform output -raw region) update-kubeconfig  --name $(ter
 cd ../vault-boundary-config
 kubectl create ns vault
 kubectl create sa vault -n vault
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vault
+  namespace: vault
+  annotations:
+    kubernetes.io/service-account.name: vault
+type: kubernetes.io/service-account-token
+EOF
 kubectl create ns test
 kubectl apply -f .
-kubectl get secret -n vault $(kubectl get sa vault -n vault -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 --decode > token.txt
-kubectl get secret -n vault $(kubectl get sa vault -n vault -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.ca\.crt}' | base64 --decode > ca.crt
+kubectl get secret -n vault vault -o jsonpath='{.data.token}' | base64 --decode > token.txt
+kubectl get secret -n vault vault -o jsonpath='{.data.ca\.crt}' | base64 --decode > ca.crt
 terraform init
 terraform apply -auto-approve
 ```
