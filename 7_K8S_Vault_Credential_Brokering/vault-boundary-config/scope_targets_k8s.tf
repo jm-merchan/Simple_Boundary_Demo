@@ -84,3 +84,11 @@ resource "boundary_target" "k8s" {
 
 }
 
+resource "boundary_alias_target" "scenario6_k8s" {
+  name           = "scenario6_k8s"
+  description    = "scenario6_k8s"
+  scope_id       = "global"
+  value          = var.scenario6_alias
+  destination_id = boundary_target.k8s.id
+  #authorize_session_host_id = boundary_host_static.bar.id
+}

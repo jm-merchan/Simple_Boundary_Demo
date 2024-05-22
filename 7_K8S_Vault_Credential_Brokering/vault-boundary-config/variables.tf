@@ -13,3 +13,8 @@ variable "kubernetes_host" {
 variable "authmethod" {
   type = string
 }
+
+variable "scenario6_alias" {
+  type = string
+  default = "scenario6.k8s.boundary.demo"
+}
