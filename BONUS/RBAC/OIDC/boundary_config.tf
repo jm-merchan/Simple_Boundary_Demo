@@ -8,6 +8,59 @@ data "boundary_scope" "Scenario1_Project" {
   scope_id = data.boundary_scope.org.id
 }
 
+data "boundary_scope" "Scenario2_db-project" {
+  name     = "Scenario2_db-project"
+  scope_id = data.boundary_scope.org.id
+}
+
+data "boundary_scope" "Scenario2_win-project" {
+  name     = "Scenario2_Windows-project"
+  scope_id = data.boundary_scope.org.id
+}
+
+data "boundary_scope" "Scenario2_ad-project" {
+  name     = "Scenario2b_ad-project"
+  scope_id = data.boundary_scope.org.id
+}
+
+data "boundary_scope" "Scenario3_ssh-project" {
+  name     = "Scenario3_ssh-project"
+  scope_id = data.boundary_scope.org.id
+}
+
+
+data "boundary_scope" "Scenario4_ssh-private-project" {
+  name     = "Scenario4_ssh-private-project"
+  scope_id = data.boundary_scope.org.id
+}
+
+data "boundary_scope" "Scenario5_ssh-private-multi-project" {
+  name     = "Scenario5_ssh-private-multi-project"
+  scope_id = data.boundary_scope.org.id
+}
+
+data "boundary_scope" "Scenario5_win-private-multi-project" {
+  name     = "Scenario5_win-private-multi-project"
+  scope_id = data.boundary_scope.org.id
+}
+
+data "boundary_scope" "Scenario6_k8s-project" {
+  name     = "Scenario6_k8s-project"
+  scope_id = data.boundary_scope.org.id
+}
+
+data "boundary_scope" "SSH_Org" {
+  name     = "SSH Recording"
+  scope_id = "global"
+}
+
+data "boundary_scope" "Scenario7_SSH_Recording" {
+  name     = "ssh-private-project"
+  scope_id = data.boundary_scope.SSH_Org.id
+}
+
+
+
 
 # An Auth0 Client loaded using its ID.
 data "auth0_client" "boundary" {
@@ -19,7 +72,7 @@ data "auth0_tenant" "tenant" {}
 resource "boundary_auth_method_oidc" "provider" {
   name                 = "Auth0"
   description          = "OIDC auth method for Auth0"
-  scope_id             = data.boundary_scope.org.id
+  scope_id             = "global" #data.boundary_scope.org.id
   issuer               = "https://${data.auth0_tenant.tenant.domain}/"
   client_id            = data.auth0_client.boundary.id
   client_secret        = data.auth0_client.boundary.client_secret
@@ -45,16 +98,16 @@ resource "boundary_user" "admin" {
   name        = boundary_account_oidc.admin.name
   description = "Admin user from Auth0"
   account_ids = [boundary_account_oidc.admin.id]
-  scope_id    = data.boundary_scope.org.id
+  scope_id    = "global" #data.boundary_scope.org.id
 }
 
-resource "boundary_role" "admin_project" {
+resource "boundary_role" "admin_org2" {
   # All Permissions for Admin at Project Scope
   name          = "admin-project"
   description   = "Full Admin Permisions at Project level"
   principal_ids = [boundary_user.admin.id]
   grant_strings = ["ids=*;type=*;actions=*"]
-  scope_id      = data.boundary_scope.Scenario1_Project.id
+  scope_id      = data.boundary_scope.SSH_Org.id
 }
 
 resource "boundary_role" "admin_org" {
@@ -90,7 +143,7 @@ resource "boundary_user" "linux" {
   name        = boundary_account_oidc.linux.name
   description = "Linux user from Auth0"
   account_ids = [boundary_account_oidc.linux.id]
-  scope_id    = data.boundary_scope.org.id
+  scope_id    = "global" #data.boundary_scope.org.id
 }
 
 resource "boundary_role" "linux1" {
@@ -99,11 +152,11 @@ resource "boundary_role" "linux1" {
   description   = "Access to linux target"
   principal_ids = [boundary_user.linux.id]
   grant_strings = [
-    "ids=tssh_RzIyHiXb2i;actions=authorize-session",
+    "ids=${var.linux1};actions=authorize-session",
     "ids=*;type=session;actions=read:self,cancel:self,list",
     "ids=*;type=*;actions=read,list"
   ]
-  scope_id = "p_u7vJrHg8oV"
+  scope_id = data.boundary_scope.Scenario1_Project.id
 }
 resource "boundary_role" "linux2" {
   # Permissions limited to linux target
@@ -111,11 +164,11 @@ resource "boundary_role" "linux2" {
   description   = "Access to linux target"
   principal_ids = [boundary_user.linux.id]
   grant_strings = [
-    "ids=tssh_NfmRQgYys8;actions=authorize-session",
+    "ids=${var.linux2};actions=authorize-session",
     "ids=*;type=session;actions=read:self,cancel:self,list",
     "ids=*;type=*;actions=read,list"
   ]
-  scope_id = "p_30r9T1my8B"
+  scope_id = data.boundary_scope.Scenario3_ssh-project.id
 }
 
 resource "boundary_role" "linux3" {
@@ -124,13 +177,39 @@ resource "boundary_role" "linux3" {
   description   = "Access to linux target"
   principal_ids = [boundary_user.linux.id]
   grant_strings = [
-    "ids=tssh_BHIFfbIMN4;actions=authorize-session",
-
-    "ids=ttcp_8pQ6xdSlBd;actions=authorize-session",
+    "ids=${var.linux3};actions=authorize-session",
     "ids=*;type=session;actions=read:self,cancel:self,list",
     "ids=*;type=*;actions=read,list"
   ]
-  scope_id = "p_QxjAlbYh2o"
+  scope_id = data.boundary_scope.Scenario4_ssh-private-project.id
+}
+
+
+resource "boundary_role" "linux4" {
+  # Permissions limited to linux target
+  name          = "linux4"
+  description   = "Access to linux target"
+  principal_ids = [boundary_user.linux.id]
+  grant_strings = [
+    "ids=${var.linux4};actions=authorize-session",
+    "ids=*;type=session;actions=read:self,cancel:self,list",
+    "ids=*;type=*;actions=read,list"
+  ]
+  scope_id = data.boundary_scope.Scenario5_ssh-private-multi-project.id
+}
+
+
+resource "boundary_role" "linux5" {
+  # Permissions limited to linux target
+  name          = "linux5"
+  description   = "Access to linux target"
+  principal_ids = [boundary_user.linux.id]
+  grant_strings = [
+    "ids=${var.linux5};actions=authorize-session",
+    "ids=*;type=session;actions=read:self,cancel:self,list",
+    "ids=*;type=*;actions=read,list"
+  ]
+  scope_id = data.boundary_scope.Scenario7_SSH_Recording.id
 }
 
 # ---------------------------
@@ -150,54 +229,54 @@ resource "boundary_user" "http_db" {
   name        = boundary_account_oidc.http_db.name
   description = "http_db user from Auth0"
   account_ids = [boundary_account_oidc.http_db.id]
-  scope_id    = data.boundary_scope.org.id
+  scope_id    = "global" #data.boundary_scope.org.id
 }
 
 resource "boundary_role" "http_db1" {
-  name          = "http_db1"
+  name          = "db1"
   description   = "Access to http or db target"
   principal_ids = [boundary_user.http_db.id]
   grant_strings = [
-    "ids=ttcp_lC1yUnQ37z;actions=authorize-session",
+    "ids=${var.db1};actions=authorize-session",
     "ids=*;type=session;actions=read:self,cancel:self,list",
     "ids=*;type=*;actions=read,list"
   ]
-  scope_id = "p_SFcJ8NY7j1"
+  scope_id = data.boundary_scope.Scenario2_db-project.id
 }
 resource "boundary_role" "http_db2" {
-  name          = "http_db1"
+  name          = "db2"
   description   = "Access to http or db target"
   principal_ids = [boundary_user.http_db.id]
   grant_strings = [
-    "ids=ttcp_k4CHRZgE5e;actions=authorize-session",
+    "ids=${var.db2};actions=authorize-session",
     "ids=*;type=session;actions=read:self,cancel:self,list",
     "ids=*;type=*;actions=read,list"
   ]
-  scope_id = "p_PfddOdWdDk"
+  scope_id = data.boundary_scope.Scenario2_db-project.id
 }
 
 resource "boundary_role" "http_db3" {
-  name          = "http_db3"
+  name          = "http1"
   description   = "Access to http or db target"
   principal_ids = [boundary_user.http_db.id]
   grant_strings = [
-    "ids=ttcp_WdcTq2mWV8;actions=authorize-session",
+    "ids=${var.http1};actions=authorize-session",
     "ids=*;type=session;actions=read:self,cancel:self,list",
     "ids=*;type=*;actions=read,list"
   ]
-  scope_id = "p_qFH6KQpIEI"
+  scope_id = data.boundary_scope.Scenario2_win-project.id
 }
 
 resource "boundary_role" "http_db4" {
-  name          = "http_db4"
+  name          = "http2"
   description   = "Access to http or db target"
   principal_ids = [boundary_user.http_db.id]
   grant_strings = [
-    "ids=ttcp_eZVifgDzph;actions=authorize-session",
+    "ids=${var.http2};actions=authorize-session",
     "ids=*;type=session;actions=read:self,cancel:self,list",
     "ids=*;type=*;actions=read,list"
   ]
-  scope_id = "p_qFH6KQpIEI"
+  scope_id = data.boundary_scope.Scenario5_win-private-multi-project.id
 }
 
 # ---------------------------
@@ -217,7 +296,7 @@ resource "boundary_user" "windows" {
   name        = boundary_account_oidc.windows.name
   description = "windows user from Auth0"
   account_ids = [boundary_account_oidc.windows.id]
-  scope_id    = data.boundary_scope.org.id
+  scope_id    = "global" #data.boundary_scope.org.id
 }
 
 resource "boundary_role" "windows1" {
@@ -225,22 +304,22 @@ resource "boundary_role" "windows1" {
   description   = "Access to rdp target"
   principal_ids = [boundary_user.windows.id]
   grant_strings = [
-    "ids=ttcp_QIepyl78ko;actions=authorize-session",
+    "ids=${var.win1};actions=authorize-session",
     "ids=*;type=session;actions=read:self,cancel:self,list",
     "ids=*;type=*;actions=read,list"
   ]
-  scope_id = "p_SFcJ8NY7j1"
+  scope_id = data.boundary_scope.Scenario2_win-project.id
 }
 resource "boundary_role" "windows2" {
   name          = "windows2"
   description   = "Access to rdp target"
   principal_ids = [boundary_user.windows.id]
   grant_strings = [
-    "ids=ttcp_PY0Awvbvfb;actions=authorize-session",
+    "ids=${var.win2};actions=authorize-session",
     "ids=*;type=session;actions=read:self,cancel:self,list",
     "ids=*;type=*;actions=read,list"
   ]
-  scope_id = "p_PfddOdWdDk"
+  scope_id = data.boundary_scope.Scenario2_ad-project.id
 }
 
 resource "boundary_role" "windows3" {
@@ -248,9 +327,9 @@ resource "boundary_role" "windows3" {
   description   = "Access to rdp target"
   principal_ids = [boundary_user.windows.id]
   grant_strings = [
-    "ids=ttcp_Gu5acMVmjP;actions=authorize-session",
+    "ids=${var.win3};actions=authorize-session",
     "ids=*;type=session;actions=read:self,cancel:self,list",
     "ids=*;type=*;actions=read,list"
   ]
-  scope_id = "p_ALJOzimtaM"
+  scope_id = data.boundary_scope.Scenario5_win-private-multi-project.id
 }
