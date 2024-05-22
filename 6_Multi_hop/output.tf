@@ -18,6 +18,14 @@ output "ssh_connect" {
   value = "boundary connect ssh -target-id ${boundary_target.ssh.id}"
 }
 
+output "ssh_connect_alias" {
+  value = "boundary connect ssh ${var.scenario5_ssh_alias}"
+}
+
 output "rdp_connect" {
   value = "boundary connect rdp -target-id=${boundary_target.win.id} -exec bash -- -c \"open rdp://full%20address=s={{boundary.addr}} && sleep 6000\""
+}
+
+output "rdp_connect_alias" {
+  value = "boundary connect rdp ${var.scenario5_rdp_alias} -exec bash -- -c \"open rdp://full%20address=s={{boundary.addr}} && sleep 6000\""
 }

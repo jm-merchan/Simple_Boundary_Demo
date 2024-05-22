@@ -14,6 +14,10 @@ output "connect_ssh" {
   value = "boundary connect ssh -target-id ${boundary_target.ssh.id}"
 }
 
+output "connect_ssh_alias" {
+  value = "boundary connect ssh ${var.scenario4_alias}"
+}
+
 /*
 output "targetWindows_creds" {
   value = aws_instance.windows-server.password_data

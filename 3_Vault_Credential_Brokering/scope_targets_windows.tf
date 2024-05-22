@@ -78,3 +78,13 @@ resource "boundary_target" "win_http" {
   ]
   */
 }
+
+
+resource "boundary_alias_target" "scenario2_win_rdp" {
+  name           = "Scenario2_Win_RDP"
+  description    = "Scenario2_Win_RDP"
+  scope_id       = "global"
+  value          = var.scenario2_alias_win_rdp
+  destination_id = boundary_target.win_rdp.id
+  #authorize_session_host_id = boundary_host_static.bar.id
+}

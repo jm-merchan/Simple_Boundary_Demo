@@ -108,4 +108,3 @@ resource "aws_instance" "boundary_target" {
     Name = "Ubuntu Boundary Target"
   }
 }
-

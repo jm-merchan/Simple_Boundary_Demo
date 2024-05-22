@@ -1,3 +1,4 @@
-username      = "admin"
-password      = "SuperSecret123!"
-key_pair_name = "cert"
+username            = "admin"
+password            = "SuperSecret123!"
+key_pair_name       = "cert"
+scenario1_alias     = "scenario1.boundary.demo"

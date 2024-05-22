@@ -94,3 +94,12 @@ resource "boundary_target" "ssh" {
   ]
 
 }
+
+resource "boundary_alias_target" "scenario5_ssh_injection" {
+  name           = "Scenario5_ssh_injection"
+  description    = "Scenario5_ssh_injection"
+  scope_id       = "global"
+  value          = var.scenario5_ssh_alias
+  destination_id = boundary_target.ssh.id
+  #authorize_session_host_id = boundary_host_static.bar.id
+}

@@ -19,3 +19,9 @@ variable "key_pair_name" {
 variable "authmethod" {
   type = string
 }
+
+
+variable "scenario1_alias" {
+  type        = string
+  description = "Alias for first target"
+}

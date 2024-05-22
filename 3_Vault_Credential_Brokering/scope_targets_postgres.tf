@@ -63,7 +63,7 @@ resource "boundary_host_set_static" "db" {
 
 resource "boundary_target" "dba" {
   type        = "tcp"
-  name        =  "Scenario2_dbAdmin"
+  name        = "Scenario2_dbAdmin"
   description = "DBA Target"
   #egress_worker_filter     = " \"sm-egress-downstream-worker1\" in \"/tags/type\" "
   #ingress_worker_filter    = " \"sm-ingress-upstream-worker1\" in \"/tags/type\" "
@@ -80,6 +80,15 @@ resource "boundary_target" "dba" {
     boundary_credential_library_vault.dba.id
   ]
 
+}
+
+resource "boundary_alias_target" "scenario2_dba" {
+  name           = "Scenario2_dbAdmin"
+  description    = "Scenario2_dbAdmin"
+  scope_id       = "global"
+  value          = "scenario2.dba.boundary.demo"
+  destination_id = boundary_target.dba.id
+  #authorize_session_host_id = boundary_host_static.bar.id
 }
 
 resource "boundary_target" "analyst" {
@@ -100,3 +109,11 @@ resource "boundary_target" "analyst" {
 
 }
 
+resource "boundary_alias_target" "scenario2_analyst" {
+  name           = "Scenario2_dbAnalyst"
+  description    = "Scenario2_dbAnalyst"
+  scope_id       = "global"
+  value          = "scenario2.dbanalyst.boundary.demo"
+  destination_id = boundary_target.analyst.id
+  #authorize_session_host_id = boundary_host_static.bar.id
+}

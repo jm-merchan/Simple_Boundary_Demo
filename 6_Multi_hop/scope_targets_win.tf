@@ -95,3 +95,12 @@ resource "boundary_target" "win_http" {
   ]
   */
 }
+
+resource "boundary_alias_target" "scenario5_rdp_injection" {
+  name           = "Scenario5_rdp_injection"
+  description    = "Scenario5_rdp_injection"
+  scope_id       = "global"
+  value          = var.scenario5_rdp_alias
+  destination_id = boundary_target.win.id
+  #authorize_session_host_id = boundary_host_static.bar.id
+}

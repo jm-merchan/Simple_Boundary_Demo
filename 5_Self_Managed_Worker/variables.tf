@@ -15,3 +15,8 @@ variable "region" {
 variable "authmethod" {
   type = string
 }
+
+variable "scenario4_alias" {
+  type        = string
+  default = "scenario4.ssh.injected.boundary.demo"
+}

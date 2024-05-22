@@ -32,6 +32,19 @@ output "rdp_connect" {
 }
 
 
+output "postgres_dbAdmin_alias" {
+  value = "boundary connect postgres ${var.scenario2_alias_dba} -dbname northwind"
+}
+
+output "postgres_dbAnalyst_alias" {
+  value = "boundary connect postgres ${var.scenario2_alias_dbanalyst} -dbname northwind"
+}
+
+output "rdp_alias" {
+  value = "boundary connect rdp ${var.scenario2_alias_win_rdp} -exec bash -- -c \"open rdp://full%20address=s={{boundary.addr}} && sleep 6000\""
+}
+
+
 output "demo_scope" {
   value = data.boundary_scope.org.id
 }

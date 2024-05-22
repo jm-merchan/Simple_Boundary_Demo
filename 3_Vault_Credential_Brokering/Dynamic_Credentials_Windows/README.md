@@ -168,6 +168,8 @@ export AD_CRED_LIB_ID=$(boundary credential-libraries create vault-generic \
 boundary targets add-credential-sources \
   -id=$TARGET_ID \
   -brokered-credential-source=$AD_CRED_LIB_ID
+export ALIAS="scenario2.ad.winrdp.boundary.demo"
+boundary aliases create target -value $ALIAS -name winrdp.ad -description "Dynamic Credential alias for AD"   -destination-id=$TARGET_ID
 ```
 
 If we refresh our Boundary Desktop we will see a new org with a new target
@@ -192,6 +194,8 @@ Or via CLI
 
 ```bash
 boundary connect rdp -target-id=$TARGET_ID -exec bash -- -c "open rdp://full%20address=s={{boundary.addr}} && sleep 6000"
+# Using Target Alias
+boundary connect rdp $ALIAS -exec bash -- -c "open rdp://full%20address=s={{boundary.addr}} && sleep 6000"
 ```
 
 ![1710336024320](image/README/1710336024320.png)

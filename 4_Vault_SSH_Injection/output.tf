@@ -10,3 +10,7 @@ output "target_privateIP" {
 output "ssh_connect" {
   value = "boundary connect ssh -target-id=${boundary_target.ssh.id}"
 }
+
+output "ssh_connect_alias" {
+  value = "boundary connect ssh ${var.scenario3_alias}"
+}
