@@ -6,7 +6,7 @@
 # https://developer.hashicorp.com/vault/tutorials/cloud-ops/amazon-peering-hcp
 
 provider "hcp" {
-
+  project_id = var.project_id
 }
 
 resource "hcp_boundary_cluster" "boundary" {
